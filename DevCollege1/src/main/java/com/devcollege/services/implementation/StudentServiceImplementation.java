@@ -1,50 +1,70 @@
 package com.devcollege.services.implementation;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.devcollege.entities.Student;
 import com.devcollege.payloads.StudentDto;
 import com.devcollege.repositories.StudentRepository;
 import com.devcollege.services.StudentService;
-import com.devcollege.entities.*;
+import com.devcollege.exceptions.*;
 
+@Service
 public class StudentServiceImplementation implements StudentService {
 	
 	@Autowired
 	private StudentRepository studentRepository;
 	
-	@Autowired
 	private StudentDto studentDto;
 	
 	@Override
-	public void addStudentDetail(Student student) {
-		studentRepository.save(student);
+	public StudentDto addStudentDetail(StudentDto studenDto) {
+		Student student = this.convertDtoToStudent(studentDto);
+		Student savedStudent = this.studentRepository.save(student);
+		return this.convertStudentToDto(savedStudent);
 	}
 
 	@Override
-	public StudentDto updateStudentDetail(StudentDto student, String studentId) {
-		return studentRepository.save(student);
+	public StudentDto updateStudentDetail(StudentDto studentDto, String studentId) {
+		Student student = this.studentRepository.findByStudentId(studentId)
+				.orElseThrow(() -> new ResourceNotFoundException("student","studentId","studentId"));
+		
+		student.setStudentId(studentDto.getStudentId());
+		student.setStudentName(studentDto.getStudentName());
+		student.setHighestQualification(studentDto.getHighestQualification());
+		student.setStudentContactNo(studentDto.getStudentContactNo());
+		student.setWalletAmount(studentDto.getWalletAmount());
+		
+		Student updatedStudent = this.studentRepository.save(student);
+		StudentDto StudentDto1 = this.convertStudentToDto(updatedStudent);
+		return StudentDto1;
 	}
 
 	@Override
 	public void deleteStudentDetail(String studentId) {
-		studentRepository.save(studentId);
+		Student student = this.studentRepository.findByStudentId(studentId)
+				.orElseThrow(()-> new ResourceNotFoundException("student","studentId","studentId"));
+		
+		this.studentRepository.delete(student);
 	}
 
 	@Override
-	public void getStudentDetail(String studentId) {
-		studentRepository.findOne(studentId);
+	public StudentDto getStudentDetail(String studentId) {
+		Student student = this.studentRepository.findByStudentId(studentId)
+				.orElseThrow(()-> new ResourceNotFoundException("student","studentId","studentId"));
+		
+		return this.convertStudentToDto(student);
 	}
 
 	@Override
 	public List<StudentDto> getAllStudentDetail() {
-		List<StudentDto> students = new ArrayList<>();
-		studentRepository.findAll()
-		.forEach(students::add);
-		return students;
+		List<Student> students = this.studentRepository.findAll();
+		
+		List<StudentDto> studentDto = students.stream().map(student->this.convertStudentToDto(student)).collect(Collectors.toList());
+		return studentDto;
 	}
 
 	@Override
@@ -58,7 +78,7 @@ public class StudentServiceImplementation implements StudentService {
 	}
 	
 	//converting StudentDto to student
-	private StudentDto convertDtoToStudent(Student student) {
+	private StudentDto convertStudentToDto(Student student) {
 		StudentDto studentDto = new StudentDto();
 		studentDto.setStudentId(student.getStudentId());
 		studentDto.setStudentName(student.getStudentName());
@@ -68,6 +88,15 @@ public class StudentServiceImplementation implements StudentService {
 		return studentDto;
 	}
 	
-	
+	//converting student to StudentDto
+	private Student convertDtoToStudent(StudentDto studenDto) {
+		Student student = new Student();
+		student.setStudentId(studentDto.getStudentId());
+		student.setStudentName(studentDto.getStudentName());
+		student.setHighestQualification(studentDto.getHighestQualification());
+		student.setStudentContactNo(studentDto.getStudentContactNo());
+		student.setWalletAmount(studentDto.getWalletAmount());
+		return student;
+	}
 
 }

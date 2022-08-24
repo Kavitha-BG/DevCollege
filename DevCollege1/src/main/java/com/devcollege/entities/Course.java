@@ -13,9 +13,6 @@ import lombok.Setter;
 
 @Entity
 @Table(name="courses")
-@NoArgsConstructor
-@Getter
-@Setter
 public class Course {
 	
 	@Id
