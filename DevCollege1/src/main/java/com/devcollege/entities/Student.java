@@ -3,32 +3,38 @@ package com.devcollege.entities;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
-import com.devcollege.entities.sequencestylegenerator.StudentSequenceIdGenerator;
+
+//import org.hibernate.annotations.GenericGenerator;
+//import org.hibernate.annotations.Parameter;
+//
+//import com.devcollege.entities.sequencestylegenerator.StudentSequenceIdGenerator;
 
 @Entity
 @Table(name="students")
 public class Student {
 	
 	@Id	
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "student_seq")
-	@GenericGenerator(
-			name = "student_seq", 
-			strategy = "com.devcollege.entities.sequencestylegenerator.StudentSequenceIdGenerator",
-			parameters = {
-				@Parameter(name = StudentSequenceIdGenerator.INCREMENT_PARAM, value = "1"),
-	            @Parameter(name = StudentSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "STD"),
-	            @Parameter(name = StudentSequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d") 
-} )
+	@GeneratedValue(generator="system-uuid")
+	@GenericGenerator(name="system-uuid", strategy = "uuid")
+//	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "student_seq")
+//	@GenericGenerator(
+//			name = "student_seq", 
+//			strategy = "com.devcollege.entities.sequencestylegenerator.StudentSequenceIdGenerator",
+//			parameters = {
+//				@Parameter(name = StudentSequenceIdGenerator.INCREMENT_PARAM, value = "1"),
+//	            @Parameter(name = StudentSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "STD"),
+//	            @Parameter(name = StudentSequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d") 
+//} )
+//	@NotNull
 	@Column(name="student_id", updatable = false, nullable=false)
 	private String studentId;
 	
+//	@NotEmpty
 	@Column(name="student_name",nullable=false,length=50)
 	private String studentName;
 	
@@ -36,6 +42,7 @@ public class Student {
 	private String highestQualification;
 	
 	@Column(name="student_contact_no",nullable=false,length=10)
+//	@Size(min = 2, max = 32, message = "Contact number must be 10-digit ") 
 	private String studentContactNo;
 	
 	@Column(name="wallet_amount",nullable=false,length=10)

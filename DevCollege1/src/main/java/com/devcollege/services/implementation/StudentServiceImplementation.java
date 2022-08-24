@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.devcollege.entities.Student;
-import com.devcollege.payloads.StudentDto;
 import com.devcollege.repositories.StudentRepository;
 import com.devcollege.services.StudentService;
 import com.devcollege.exceptions.*;
@@ -18,29 +17,34 @@ public class StudentServiceImplementation implements StudentService {
 	@Autowired
 	private StudentRepository studentRepository;
 	
-	private StudentDto studentDto;
 	
 	@Override
-	public StudentDto addStudentDetail(StudentDto studenDto) {
-		Student student = this.convertDtoToStudent(studentDto);
+	public Student addStudentDetail(Student student) {
+		
+//		if(!student.equals(null)) {
+//			if(!studentId.equals(null)&&!studentName.equals(null)&&!highestQualification.equals(null)&&!studentContactNo.equals(null)&&!walletAmount.equals(null)){
+//			System.out.println("Successfully Added Student details for ");
+//		}else {
+//			System.out.println("Failed to add Student details.");
+//		}
+//		
 		Student savedStudent = this.studentRepository.save(student);
-		return this.convertStudentToDto(savedStudent);
+		return savedStudent;
 	}
 
 	@Override
-	public StudentDto updateStudentDetail(StudentDto studentDto, String studentId) {
-		Student student = this.studentRepository.findByStudentId(studentId)
+	public Student updateStudentDetail(Student student, String studentId) {
+		Student student1 = this.studentRepository.findByStudentId(studentId)
 				.orElseThrow(() -> new ResourceNotFoundException("student","studentId","studentId"));
 		
-		student.setStudentId(studentDto.getStudentId());
-		student.setStudentName(studentDto.getStudentName());
-		student.setHighestQualification(studentDto.getHighestQualification());
-		student.setStudentContactNo(studentDto.getStudentContactNo());
-		student.setWalletAmount(studentDto.getWalletAmount());
+		student1.setStudentId(student1.getStudentId());
+		student1.setStudentName(student1.getStudentName());
+		student1.setHighestQualification(student1.getHighestQualification());
+		student1.setStudentContactNo(student1.getStudentContactNo());
+		student1.setWalletAmount(student1.getWalletAmount());
 		
-		Student updatedStudent = this.studentRepository.save(student);
-		StudentDto StudentDto1 = this.convertStudentToDto(updatedStudent);
-		return StudentDto1;
+		Student updatedStudent = this.studentRepository.save(student1);
+		return updatedStudent;
 	}
 
 	@Override
@@ -52,23 +56,23 @@ public class StudentServiceImplementation implements StudentService {
 	}
 
 	@Override
-	public StudentDto getStudentDetail(String studentId) {
+	public Student getStudentDetail(String studentId) {
 		Student student = this.studentRepository.findByStudentId(studentId)
 				.orElseThrow(()-> new ResourceNotFoundException("student","studentId","studentId"));
 		
-		return this.convertStudentToDto(student);
+		return student;
 	}
 
 	@Override
-	public List<StudentDto> getAllStudentDetail() {
+	public List<Student> getAllStudentDetail() {
 		List<Student> students = this.studentRepository.findAll();
 		
-		List<StudentDto> studentDto = students.stream().map(student->this.convertStudentToDto(student)).collect(Collectors.toList());
-		return studentDto;
+		//List<Student> student = students.stream().map(student->this.student).collect(Collectors.toList());
+		return students;
 	}
 
 	@Override
-	public StudentDto addWalletAmount(Float walletAmount) {
+	public Student addWalletAmount(Float walletAmount) {
 		return null;
 	}
 
@@ -76,27 +80,6 @@ public class StudentServiceImplementation implements StudentService {
 	public void getWalletDetail() {
 
 	}
-	
-	//converting StudentDto to student
-	private StudentDto convertStudentToDto(Student student) {
-		StudentDto studentDto = new StudentDto();
-		studentDto.setStudentId(student.getStudentId());
-		studentDto.setStudentName(student.getStudentName());
-		studentDto.setHighestQualification(student.getHighestQualification());
-		studentDto.setStudentContactNo(student.getStudentContactNo());
-		studentDto.setWalletAmount(student.getWalletAmount());
-		return studentDto;
-	}
-	
-	//converting student to StudentDto
-	private Student convertDtoToStudent(StudentDto studenDto) {
-		Student student = new Student();
-		student.setStudentId(studentDto.getStudentId());
-		student.setStudentName(studentDto.getStudentName());
-		student.setHighestQualification(studentDto.getHighestQualification());
-		student.setStudentContactNo(studentDto.getStudentContactNo());
-		student.setWalletAmount(studentDto.getWalletAmount());
-		return student;
-	}
+
 
 }

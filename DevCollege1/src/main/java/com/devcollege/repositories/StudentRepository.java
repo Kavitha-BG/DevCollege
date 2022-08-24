@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.devcollege.entities.Student;
 
 @Repository
-public interface StudentRepository extends JpaRepository<Student, Integer> {
+public interface StudentRepository extends JpaRepository<Student, String> {
 
 	
 //	List<Student> findByStudentId(String studentId);

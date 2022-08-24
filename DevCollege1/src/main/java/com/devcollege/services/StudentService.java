@@ -1,23 +1,23 @@
 package com.devcollege.services;
 
 import java.util.List;
+import com.devcollege.entities.Student;
 
-import com.devcollege.payloads.StudentDto;
 
 public interface StudentService {
 	
-	public StudentDto addStudentDetail(StudentDto studenDto);
+	public Student addStudentDetail(Student student);
 	
-	public StudentDto updateStudentDetail(StudentDto student, String studentId);
+	public Student updateStudentDetail(Student student, String studentId);
 	
 	public void deleteStudentDetail(String studentId);
 	
-	public StudentDto getStudentDetail(String studentid);
+	public Student getStudentDetail(String studentid);
 	
-	public List<StudentDto> getAllStudentDetail();
+	public List<Student> getAllStudentDetail();
 	
 	
-	public StudentDto addWalletAmount(Float walletAmount);
+	public Student addWalletAmount(Float walletAmount);
 	
 	public void getWalletDetail();
 	
