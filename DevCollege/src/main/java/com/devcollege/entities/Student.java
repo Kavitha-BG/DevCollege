@@ -37,23 +37,22 @@ public class Student {
 	@Column(name="student_id", updatable = false, nullable=false)
 	private String studentId;
 	
-	
 	@Column(name="student_name",nullable=false,length=50)
-	@NotNull(message = "Name must not be null")
+	@NotNull
 	private String studentName;
 	
 	@Column(name="highest_qualification",nullable=false)
-	@NotNull(message = "Name must not be null")
+	@NotNull
 	private String highestQualification;
 	
 	@Column(name="student_contact_no",nullable=false,length=10)
-	@Size(min = 10, max = 10, message = "Contact number must be 10-digit ")
+	@Size(min = 10, max = 10, message = "Contact number must be 10-digit numeric string")
 	@NotNull
 	private String studentContactNo;
 	
 	@Column(name="wallet_amount",nullable=false,length=10)
-	@NotNull(message = "Name must not be null")
-	@Positive
+	@NotNull
+	@Positive(message= "Wallet Amount must be numeric or decimal value positive value")
 	private Float walletAmount;
 	
 	public Student() {

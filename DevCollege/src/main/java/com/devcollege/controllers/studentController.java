@@ -1,5 +1,7 @@
 package com.devcollege.controllers;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
@@ -26,7 +28,7 @@ public class studentController {
 //	private StudentRepository studentRepository;
 	
 	@PostMapping("/addstudent")
-	public ResponseEntity<String> addStudentDetail(@RequestBody Student student) {
+	public ResponseEntity<String> addStudentDetail(@Valid @RequestBody Student student) {
 //		Student savedStudent = this.studentRepository.save(student);
 //		this.studentRepository.save(savedStudent);
 		

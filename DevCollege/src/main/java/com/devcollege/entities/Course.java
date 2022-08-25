@@ -3,34 +3,45 @@ package com.devcollege.entities;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name="courses")
 public class Course {
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO )
+	@Id	
+	@GeneratedValue(generator="system-uuid")
+	@GenericGenerator(name="system-uuid", strategy = "uuid")
+	@Column(name="course_id", updatable = false, nullable=false)
 	private String courseId;
 	
 	@Column(name="course_name",nullable=false,length=100)
+	@NotNull
 	private String courseName;
 	
 	@Column(name="course_description",nullable=false)
+	@NotNull
 	private String courseDescription;
 	
-	@Column(name="no_of_registration_allowed",nullable=false,length=10)
+	@Column(name="no_of_registration_allowed",nullable=false,length=100)
+	@NotNull
 	private int noOfRegistrationAllowed;
 	
-	@Column(name="course_fee",nullable=false,length=10)
+	@Column(name="course_fee",nullable=false,length=100)
+	@NotNull
 	private float courseFee;
 	
-	@Column(name="course_duration",nullable=false,length=10)
+	@Column(name="course_duration",nullable=false,length=100)
+	@NotNull
 	private int courseDuration;
 	
-	@Column(name="course_tag",nullable=false,length=10)
+	@Column(name="course_tag",nullable=false,length=100)
+	@NotNull
 	private String courseTag;
 
 	public Course(String courseId, String courseName, String courseDescription, int noOfRegistrationAllowed,
