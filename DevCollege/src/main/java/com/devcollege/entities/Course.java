@@ -1,10 +1,18 @@
 package com.devcollege.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -44,8 +52,11 @@ public class Course {
 	@NotNull
 	private String courseTag;
 
+	public Course() {
+	}
+
 	public Course(String courseId, String courseName, String courseDescription, int noOfRegistrationAllowed,
-			float courseFee, int courseDuration, String courseTag) {
+				  float courseFee, int courseDuration, String courseTag) {
 		super();
 		this.courseId = courseId;
 		this.courseName = courseName;
@@ -120,6 +131,6 @@ public class Course {
 	}
 	
 	
-	
-	
+//	@OneToMany(mappedBy = "enrollment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//	private List<Enrollment> enrollments = new ArrayList<>();
 }

@@ -1,6 +1,9 @@
 package com.devcollege.advice;
 
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolation;
@@ -10,7 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
 import com.devcollege.exceptions.EmptyInputException;
+import com.devcollege.exceptions.InvalidInputException;
+import com.devcollege.exceptions.NoSuchElementFoundException;
+import com.devcollege.exceptions.StudentNotFoundException;
 
 @ControllerAdvice
 public class MyControllerAdvice {
@@ -21,17 +28,35 @@ public class MyControllerAdvice {
 		return new ResponseEntity<String>("Failed to add Student details.", HttpStatus.BAD_REQUEST);
 	}
 	
-//	@ExceptionHandler(NoSuchElementFound.class)
-//	public ResponseEntity<String> handleEmptyList(NoSuchElementFound noSuchElementFound) {
+	@ExceptionHandler(NoSuchElementFoundException.class)
+	public ResponseEntity<String> handleNoSuchElementFoundException(NoSuchElementFoundException noSuchElementFoundException) {
+		
+		return new ResponseEntity<String>("Failed to update Student details.", HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(InvalidInputException.class)
+	public ResponseEntity<String> handleInvalidInputException(InvalidInputException noSuchElementFoundException) {
+		
+		return new ResponseEntity<String>("Failed to Delete Student details.", HttpStatus.BAD_REQUEST);
+	}
+	
+//	@ExceptionHandler(StudentNotFoundException.class)
+//	public ResponseEntity<String> handleStudentNotFoundException(StudentNotFoundException studentNotFoundException) {
 //		
-//		return new ResponseEntity<String>("Input field is Empty, please look into it..", HttpStatus.NOT_FOUND);
+//		return new ResponseEntity<String>("Failed to Get Student details.", HttpStatus.BAD_REQUEST);
 //	}
 	
+	@ExceptionHandler(StudentNotFoundException.class)
+	public Map<String, String> handleStudentNotFoundException(StudentNotFoundException studentNotFoundException) {
+		Map<String, String> exception = new HashMap<>();
+		exception.put("errorMessage", studentNotFoundException.getMessage());
+		
+		return exception;
+	}
 	
-//	protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException exception,HttpHeaders headers, HttpStatus status, WebRequest request) {
-//		
-//		return new ResponseEntity<Object>("Please change http method request", HttpStatus.NOT_FOUND);
-//	}
+	
+	
+	
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorDto> handleException(MethodArgumentNotValidException ex) {
@@ -46,6 +71,24 @@ public class MyControllerAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(dto);
 
     }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+//	@ExceptionHandler(value = MethodArgumentNotValidException.class)
+//	   public ResponseEntity<String> handleException(MethodArgumentNotValidException ex, WebRequest req){
+//		return new ResponseEntity<String>("Failed to Get the details.", HttpStatus.BAD_REQUEST);
+//	   // Build your custom response object and access the exception message using ex.getMessage()
+//	}
+//	
+	
+	
 
     public static class ErrorDto {
 
@@ -54,7 +97,7 @@ public class MyControllerAdvice {
 //        private final String message;
         private List<String> detailedMessages;
 
-        public ErrorDto(HttpStatus httpStatus, List<String> detailedMessages) {
+        public ErrorDto( List<String> detailedMessages) {
 //            status = httpStatus.value();
 //            error = httpStatus.getReasonPhrase();
             this.detailedMessages = detailedMessages;
@@ -71,7 +114,7 @@ public class MyControllerAdvice {
 		public void setDetailedMessages(List<String> detailedMessages) {
 			this.detailedMessages = detailedMessages;
 		}
-//
+
 //		public int getStatus() {
 //			return status;
 //		}
@@ -90,9 +133,17 @@ public class MyControllerAdvice {
 //			this.error = error;
 //			this.message = message;
 //			this.detailedMessages = detailedMessages;
+//		}		
+		
+		//if there is no suitable handler.
+//		@ExceptionHandler(Exception.class)
+//		public ResponseEntity<Map<String, String>> handleException(
+//		        Exception e) throws IOException {
+//		    Map<String, String> errorResponse = new HashMap<>();
+//		    errorResponse.put("message", e.getLocalizedMessage());
+//		    errorResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.toString());
+//		    return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 //		}
-        
-        
 
     }
 	

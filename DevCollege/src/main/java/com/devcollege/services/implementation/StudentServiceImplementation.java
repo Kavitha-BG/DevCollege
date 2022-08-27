@@ -2,9 +2,10 @@ package com.devcollege.services.implementation;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.stereotype.Service;
 
 import com.devcollege.entities.Student;
 import com.devcollege.repositories.StudentRepository;
@@ -30,41 +31,83 @@ public class StudentServiceImplementation implements StudentService {
 	}
 
 	@Override
-	public Student updateStudentDetail(Student student, String studentId) {
-		return student;
-//		Student student1 = this.studentRepository.findByStudentId(studentId)
-//				.orElseThrow(() -> new ResourceNotFoundException("student","studentId","studentId"));
-//		
-//		student1.setStudentId(student1.getStudentId());
-//		student1.setStudentName(student1.getStudentName());
-//		student1.setHighestQualification(student1.getHighestQualification());
-//		student1.setStudentContactNo(student1.getStudentContactNo());
-//		student1.setWalletAmount(student1.getWalletAmount());
-//		
-//		Student updatedStudent = this.studentRepository.save(student1);
+	public String updateStudentDetail(Student student, String studentId) {
+			
+		Student updateStudent = studentRepository.findById(studentId).orElse(null);
+		
+		if(updateStudent != null) {
+			updateStudent.setStudentName(student.getStudentName());
+			updateStudent.setHighestQualification(student.getHighestQualification());
+			updateStudent.setStudentContactNo(student.getStudentContactNo());
+			
+			studentRepository.save(updateStudent);
+			return "Successfully updated student detail for course: " + studentId;
+		}else {
+			throw new NoSuchElementFoundException(studentId + " doesn't exist.");
+		}
+		
+		
+//		Student updatedStudent = studentRepository.save(updateStudent);
 //		return updatedStudent;
 	}
 
 	@Override
-	public void deleteStudentDetail(String studentId) {
-//		Student student = this.studentRepository.findByStudentId(studentId)
-//				.orElseThrow(()-> new ResourceNotFoundException("student","studentId","studentId"));
-//		
+	public String deleteStudentDetail(String studentId) {
+		
+		Student student = studentRepository.findById(studentId).orElse(null);
+		if(student != null) {
+			studentRepository.deleteById(studentId);
+			studentRepository.delete(student);
+			return "Successfully deleted student detail for course: " + studentId;
+		}else {
+			throw new InvalidInputException(studentId + " doesn't exist.");
+		}
+//				.orElseThrow(()-> new InvalidInputException());
 //		this.studentRepository.delete(student);
+
 	}
 
 	@Override
 	public Student getStudentDetail(String studentId) {
-		return null;
-////		Student student = this.studentRepository.findByStudentId(studentId)
-////				.orElseThrow(()-> new ResourceNotFoundException("student","studentId","studentId"));
-////		
-////		return student;
+		
+//		Optional<Student> student = studentRepository.findById(studentId); 
+//		if(!studentId.equals(studentId)) {
+//			System.out.println("<Student-Id> does not exist.");
+//		}
+			
+		Student student = studentRepository.findByStudentId(studentId);
+		
+		if(student != null) {
+			return student;
+		} else {
+//			throw new StudentNotFoundException("Student Id: " + studentId + " does not exist."); 
+		}
+//		.orElseThrow(() -> new StudentNotFoundException("<Student-Id> does not exist.", studentId));
+//		  
+//		  
+//		Student student = studentRepository.findByStudentId(studentId)
+//				.orElseThrow(()-> new ResourceNotFoundException("student","studentId","studentId"));
+//		
+		return student;
 	}
 
 	@Override
-	public List<Student> getAllStudentDetail() {
-		return null;
+	public List<Student> getAllStudentDetail() throws StudentNotFoundException  {
+		
+//		this.studentRepository.findAll();
+//		if()
+		
+		List<Student> studentList = studentRepository.findAll();
+		
+		if(studentList != null) {
+			return studentRepository.findAll();
+//			System.out.println("No data Found");
+		} else {
+			throw new StudentNotFoundException("No data found..!!");
+
+		}
+		
+//		return studentRepository.findAll();
 //		List<Student> studentList = studentRepository.findAll();
 //		
 //		if(studentList.isEmpty()) {

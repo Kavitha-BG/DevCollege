@@ -1,7 +1,7 @@
 package com.devcollege.exceptions;
 
 
-public class EmptyInputException extends RuntimeException {
+public class InvalidInputException extends RuntimeException {
 	
 	private static final long serialVersionUID = 1L;
 	private String errorCode;
@@ -21,14 +21,14 @@ public class EmptyInputException extends RuntimeException {
 		this.errorMessage = errorMessage;
 	}
 	
-	public EmptyInputException(String errorMessage) {
+	public InvalidInputException(String errorMessage) {
 		super(errorMessage);
-	}	
+	}
 	
-	public EmptyInputException() {
+	public InvalidInputException() {
 		
 	}
-	public EmptyInputException(String errorCode, String errorMessage) {
+	public InvalidInputException(String errorCode, String errorMessage) {
 		super();
 		this.errorCode = errorCode;
 		this.errorMessage = errorMessage;

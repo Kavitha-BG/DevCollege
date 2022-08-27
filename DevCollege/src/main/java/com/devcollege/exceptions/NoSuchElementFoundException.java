@@ -1,7 +1,7 @@
 package com.devcollege.exceptions;
 
 
-public class EmptyInputException extends RuntimeException {
+public class NoSuchElementFoundException extends RuntimeException {
 	
 	private static final long serialVersionUID = 1L;
 	private String errorCode;
@@ -19,16 +19,16 @@ public class EmptyInputException extends RuntimeException {
 	}
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
-	}
-	
-	public EmptyInputException(String errorMessage) {
-		super(errorMessage);
 	}	
 	
-	public EmptyInputException() {
+	public NoSuchElementFoundException(String errorMessage) {
+		super(errorMessage);
+	}
+	
+	public NoSuchElementFoundException() {
 		
 	}
-	public EmptyInputException(String errorCode, String errorMessage) {
+	public NoSuchElementFoundException(String errorCode, String errorMessage) {
 		super();
 		this.errorCode = errorCode;
 		this.errorMessage = errorMessage;
