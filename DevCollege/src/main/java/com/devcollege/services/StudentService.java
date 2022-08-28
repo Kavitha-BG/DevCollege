@@ -8,12 +8,12 @@ import com.devcollege.exceptions.StudentNotFoundException;
 public interface StudentService {
 	
 	public Student addStudentDetail(Student student);
-	
+
 	public String updateStudentDetail(Student student, String studentId);
 	
-	public String deleteStudentDetail(String studentId);
+	public void deleteStudentDetail(String studentId);
 	
-	public Student getStudentDetail(String studentid);
+	public Student getStudentDetail(String studentId);
 	
 	public List<Student> getAllStudentDetail() throws StudentNotFoundException;
 	

@@ -12,11 +12,6 @@ public class StudentNotFoundException extends RuntimeException {
 //	public void setErrorCode(String errorCode) {
 //		this.errorCode = errorCode;
 //	}
-	
-/**
-	 * 
-	 */
-//	private static final long serialVersionUID = 1L;
 
 	//	public String getErrorMessage() {
 //		return errorMessage;
@@ -25,8 +20,8 @@ public class StudentNotFoundException extends RuntimeException {
 //		this.errorMessage = errorMessage;
 //	}
 //
-	public StudentNotFoundException(String errorMessage) {
-		super(errorMessage);
+	public StudentNotFoundException(String message) {
+		super(message);
 	}
 	
 //	public StudentNotFoundException() {
