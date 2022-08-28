@@ -7,19 +7,19 @@ import com.devcollege.exceptions.StudentNotFoundException;
 
 public interface StudentService {
 	
-	public Student addStudentDetail(Student student);
+	public Student addStudent(Student student);
 
-	public String updateStudentDetail(Student student, String studentId);
+	public String updateStudentById(Student student, String studentId);
 	
-	public void deleteStudentDetail(String studentId);
+	public void deleteStudent(String studentId);
 	
-	public Student getStudentDetail(String studentId);
+	public Student getStudentById(String studentId);
 	
-	public List<Student> getAllStudentDetail() throws StudentNotFoundException;
+	public List<Student> getAllStudent() throws StudentNotFoundException;
 	
 	
-	public Student addWalletAmount(Float walletAmount);
-	
-	public void getWalletDetail();
-	
+//	public Student addWalletAmount(Float amount);
+//
+//	public Student getWalletDetail();
+//
 }

@@ -3,17 +3,8 @@ package com.devcollege.entities;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
+import javax.persistence.*;
 
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -131,6 +122,13 @@ public class Course {
 	}
 	
 	
-//	@OneToMany(mappedBy = "enrollment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//	@OneToMany(mappedBy = "enrollment", cascade = CascadeType.ALL)
 //	private List<Enrollment> enrollments = new ArrayList<>();
+
+	@OneToMany(targetEntity = Enrollment.class, cascade = CascadeType.ALL)
+	@JoinColumn(
+			name = "courseId",
+			referencedColumnName = "course_Id"
+	)
+	private List<Enrollment> enrollmentList;
 }

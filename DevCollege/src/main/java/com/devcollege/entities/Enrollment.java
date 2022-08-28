@@ -71,16 +71,4 @@ public class Enrollment {
 				+ ", courseEndDatetime=" + courseEndDatetime + "]";
 	}
 	
-//	@ManyToOne()
-//	@JoinColumn(name = "student_id")
-//	private List<Student> students = new ArrayList<>();
-//	
-//	@ManyToOne
-//	@JoinColumn(name = "course_id")
-//	private List<Course> courses = new  ArrayList<>();
-		
-	
-	
-	
-	
 }

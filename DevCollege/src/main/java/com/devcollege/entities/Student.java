@@ -1,11 +1,7 @@
 package com.devcollege.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
@@ -14,6 +10,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import com.devcollege.sequencestylegenerator.StudentSequenceIdGenerator;
+
+import java.util.List;
 
 @Entity
 @Table(name="students")
@@ -31,13 +29,13 @@ public class Student {
 			} )	
 	@Column(name="student_id", nullable=false, length=16)
 	private String studentId;
-	
+
 	@Column(name="student_name",nullable=false,length=50)
-	@NotNull(message = "Student name should not be null")
+	@NotBlank(message = "Student name should not be null")
 	private String studentName;
 	
 	@Column(name="highest_qualification",nullable=false)
-	@NotNull
+	@NotNull(message="Highest Qualification should be B.E, B.Tech, Diploma, M.E, M.Tech., M.Phil., MS, BBA, BCom, BSc, MSc, BCA, MCA, LLB, MBBS, MBA")
 	private String highestQualification;
 	
 	@Column(name="student_contact_no",nullable=false,length=10)
@@ -110,7 +108,12 @@ public class Student {
 				+ highestQualification + ", studentContactNo=" + studentContactNo + ", walletAmount=" + walletAmount
 				+ "]";
 	}
-		
-//	@OneToMany(mappedBy = "enrollmet", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//	private List<Enrollment> enrollment = new ArrayList<>();
+
+	@OneToMany(targetEntity = Enrollment.class, cascade = CascadeType.ALL)
+	@JoinColumn(
+			name = "studentID",
+			referencedColumnName = "student_Id"
+	)
+	private List<Enrollment> enrollmentList;
+
 }
