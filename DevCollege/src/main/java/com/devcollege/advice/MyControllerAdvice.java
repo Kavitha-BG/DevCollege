@@ -18,6 +18,7 @@ import com.devcollege.exceptions.EmptyInputException;
 import com.devcollege.exceptions.InvalidInputException;
 import com.devcollege.exceptions.NoSuchElementFoundException;
 import com.devcollege.exceptions.StudentNotFoundException;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 public class MyControllerAdvice {
@@ -40,19 +41,19 @@ public class MyControllerAdvice {
 		return new ResponseEntity<String>("Failed to Delete Student details.", HttpStatus.BAD_REQUEST);
 	}
 	
-//	@ExceptionHandler(StudentNotFoundException.class)
-//	public ResponseEntity<String> handleStudentNotFoundException(StudentNotFoundException studentNotFoundException) {
-//		
-//		return new ResponseEntity<String>("Failed to Get Student details.", HttpStatus.BAD_REQUEST);
-//	}
-	
 	@ExceptionHandler(StudentNotFoundException.class)
-	public Map<String, String> handleStudentNotFoundException(StudentNotFoundException studentNotFoundException) {
-		Map<String, String> exception = new HashMap<>();
-		exception.put("errorMessage", studentNotFoundException.getMessage());
-		
-		return exception;
+	public ResponseEntity<String> handleStudentNotFoundException(StudentNotFoundException studentNotFoundException) {
+
+		return new ResponseEntity<String>("Failed to Get Student details.", HttpStatus.BAD_REQUEST);
 	}
+//	@ResponseStatus(HttpStatus.BAD_REQUEST)
+//	@ExceptionHandler(StudentNotFoundException.class)
+//	public Map<String, String> handleStudentNotFoundException(StudentNotFoundException studentNotFoundException) {
+//		Map<String, String> exception = new HashMap<>();
+//		exception.put("errorMessage", studentNotFoundException.getMessage());
+//
+//		return exception;
+//	}
 	
 	
 	
@@ -71,9 +72,16 @@ public class MyControllerAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(dto);
 
     }
-	
-	
-	
+//	@ResponseStatus(HttpStatus.BAD_REQUEST)
+//	@ExceptionHandler(MethodArgumentNotValidException.class)
+//	public Map<String,String> handleMethodArgumentNotValidException(MethodArgumentNotValidException methodArgumentNotValidException) {
+//		Map<String,String> errorMap = new HashMap<>();
+//		methodArgumentNotValidException.getBindingResult().getAllErrors().forEach(error -> {
+//			errorMap.put(error.getField(),error.getDefaultMessage());
+//		});
+//		return errorMap;
+//	}
+
 	
 	
 	
@@ -104,7 +112,7 @@ public class MyControllerAdvice {
         }
 
 		public ErrorDto() {
-			 
+
 		}
 
 		public List<String> getDetailedMessages() {

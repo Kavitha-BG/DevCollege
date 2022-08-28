@@ -25,15 +25,15 @@ public class Student {
 			name = "student_seq", 
 			strategy = "com.devcollege.sequencestylegenerator.StudentSequenceIdGenerator",
 			parameters = {
-				@Parameter(name = StudentSequenceIdGenerator.INCREMENT_PARAM, value = "50"),
+				@Parameter(name = StudentSequenceIdGenerator.INCREMENT_PARAM, value = "1"),
 	            @Parameter(name = StudentSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "STD"),
-	            @Parameter(name = StudentSequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d") 
+	            @Parameter(name = StudentSequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d")
 			} )	
 	@Column(name="student_id", nullable=false, length=16)
 	private String studentId;
 	
 	@Column(name="student_name",nullable=false,length=50)
-	@NotNull
+	@NotNull(message = "Student name should not be null")
 	private String studentName;
 	
 	@Column(name="highest_qualification",nullable=false)
