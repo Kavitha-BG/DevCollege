@@ -1,6 +1,5 @@
 package com.devcollege.services.implementation;
 
-import java.lang.constant.Constable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,7 @@ public class StudentServiceImplementation implements StudentService {
 	public Student addStudent(Student student) {
 		if (student.getStudentName().isEmpty() || student.getStudentContactNo().length() == 0 ||
 				student.getHighestQualification().isEmpty() || student.getWalletAmount().isNaN()) {
-			throw new EmptyInputException("Student Id: " + " doesn't exist.");
+			throw new EmptyInputException();
 		} else {
 			Student savedStudent = studentRepository.save(student);
 			return savedStudent;
@@ -54,7 +53,6 @@ public class StudentServiceImplementation implements StudentService {
 	public void deleteStudent(String studentId) {
 		Student student = studentRepository.findById(studentId).orElse(null);
 		if (student != null) {
-
 			studentRepository.delete(student);
 //			return "Successfully deleted student detail for course: " + studentId;
 		} else {

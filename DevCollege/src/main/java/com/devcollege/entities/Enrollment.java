@@ -4,11 +4,9 @@ import com.devcollege.sequencestylegenerator.SequenceIdGenerator;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,15 +32,17 @@ public class Enrollment {
 			parameters = {
 					@Parameter(name = SequenceIdGenerator.INCREMENT_PARAM, value = "1"),
 					@Parameter(name = SequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "EN"),
-					@Parameter(name = SequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "EN"),
 					@Parameter(name = SequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d")
 			} )
+	@Column(name="enroll_id", updatable = false, nullable=false)
 	private String enrollId;
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
-	@Column(name="course_start_datetime",nullable=false,length=10)
+
+	@DateTimeFormat(pattern = "YYYY/MM/DD HH:mm:ss")
+	@Column(name="course_start_datetime",nullable=false)
 	private Date courseStartDatetime;
 
-	@DateTimeFormat(pattern = "dd/MM/yyyy")	@Column(name="course_end_datetime",nullable=false,length=10)
+	@DateTimeFormat(pattern = "YYYY/MM/DD HH:mm:ss")
+	@Column(name="course_end_datetime",nullable=false)
 	private Date courseEndDatetime;
 
 	public Enrollment() {

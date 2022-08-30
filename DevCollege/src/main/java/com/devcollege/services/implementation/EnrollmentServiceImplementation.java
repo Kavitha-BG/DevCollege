@@ -1,15 +1,12 @@
 package com.devcollege.services.implementation;
 
 import com.devcollege.entities.Enrollment;
-import com.devcollege.entities.Student;
 import com.devcollege.exceptions.EmptyInputException;
 import com.devcollege.exceptions.InvalidInputException;
 import com.devcollege.exceptions.NoSuchElementFoundException;
 import com.devcollege.exceptions.StudentNotFoundException;
 import com.devcollege.repositories.EnrollmentRepository;
-import com.devcollege.repositories.StudentRepository;
 import com.devcollege.services.EnrollmentService;
-import com.devcollege.services.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

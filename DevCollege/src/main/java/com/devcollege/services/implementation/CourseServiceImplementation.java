@@ -21,7 +21,7 @@ public class CourseServiceImplementation implements CourseService {
 	public Course addCourse(Course course) {
 		if (course.getCourseName().isEmpty() || course.getCourseDescription().isEmpty() || course.getCourseFee() == 0
 				|| course.getCourseDuration() == 0 || course.getNoOfSlot() == 0 || course.getCourseTag().isEmpty()) {
-			throw new EmptyInputException("Course Id: " + " doesn't exist.");
+			throw new EmptyInputException();
 		} else {
 			Course savedCourse = courseRepository.save(course);
 			return savedCourse;
@@ -32,12 +32,14 @@ public class CourseServiceImplementation implements CourseService {
 	public String updateCourseById(Course course, String courseId) {
 		Course updateCourse = courseRepository.findById(courseId).orElse(null);
 		if (updateCourse != null) {
+
 			updateCourse.setCourseName(course.getCourseName());
 			updateCourse.setCourseDescription(course.getCourseDescription());
 			updateCourse.setCourseFee(course.getCourseFee());
 			updateCourse.setCourseDuration(course.getCourseDuration());
 			updateCourse.setNoOfSlot(course.getNoOfSlot());
 			updateCourse.setCourseTag(course.getCourseTag());
+
 			courseRepository.save(updateCourse);
 			return "Successfully updated student detail for course: " + courseId;
 		} else {
@@ -58,11 +60,11 @@ public class CourseServiceImplementation implements CourseService {
 
 	@Override
 	public Course getCourseById(String courseId) {
-		Course course = courseRepository.findByCourseId(courseId);
+		Course course = courseRepository.findById(courseId).orElse(null);
 		if (course != null) {
 			return course;
 		} else {
-			throw new StudentNotFoundException("Student Id: " + courseId + " does not exist.");
+			throw new StudentNotFoundException("Course Id: " + courseId + " does not exist.");
 		}
 	}
 

@@ -2,7 +2,6 @@ package com.devcollege.entities;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
-
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import com.devcollege.sequencestylegenerator.SequenceIdGenerator;
@@ -39,7 +38,7 @@ public class Student {
 	private String studentContactNo;
 	
 	@Column(name="wallet_amount",nullable=false,length=10)
-	@Digits(message="Number should contain 10 digits.", fraction = 0, integer = 10)
+//	@Digits(message="Number should contain 10 digits.", fraction = 0, integer = 10)
 	@NotNull
 	@Positive(message= "Wallet Amount must be numeric or decimal value positive value")
 	private Float walletAmount;

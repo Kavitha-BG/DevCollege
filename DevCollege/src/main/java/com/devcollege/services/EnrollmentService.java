@@ -17,7 +17,7 @@ public interface EnrollmentService {
 	
 	public Enrollment getEnrollmentById(String enrollmentId);
 	
-	public List<Enrollment> getAllEnrollments() throws StudentNotFoundException;
+	public List<Enrollment> getAllEnrollments();
 
 	public Enrollment getEnrollmentByStudentId(String enrollmentId);
 

@@ -1,8 +1,9 @@
 package com.devcollege.controllers;
 
 import com.devcollege.entities.Course;
-import com.devcollege.exceptions.StudentNotFoundException;
 import com.devcollege.services.CourseService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,19 +17,24 @@ import java.util.List;
 @Validated
 @RequestMapping("/course")
 public class CourseController {
+
+	private final Logger logger = LoggerFactory.getLogger(CourseController.class);
+
 	@Autowired
 	private CourseService courseService;
 
 	@PostMapping("/addcourse")
-	public ResponseEntity<String> addCourse(@Valid @RequestBody Course course) {
+	public ResponseEntity<String> addCourse( @RequestBody Course course) {
+
+		logger.info("Add course :");
 		Course savedCourse = courseService.addCourse(course);
 		return ResponseEntity.ok("Successfully Added Course details for " + course.getCourseId());
 	}
 	
 	@PutMapping("/updatecourse/{courseId}")
 	public ResponseEntity<String> updateCourseById(@Valid @RequestBody Course course, @PathVariable String courseId) {
-		Course savedCourse = courseService.addCourse(course);
-		return ResponseEntity.ok("Successfully Updated Course details for "+ savedCourse);
+		String updatedCourse = courseService.updateCourseById(course, courseId);
+		return ResponseEntity.ok("Successfully Updated Course details for "+ updatedCourse);
 	}
 	
 	@DeleteMapping("/deletecourse/{courseId}")
