@@ -1,5 +1,10 @@
 package com.devcollege.entities;
 
+import com.devcollege.sequencestylegenerator.SequenceIdGenerator;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,15 +25,24 @@ import javax.persistence.Table;
 @Entity
 @Table(name="enrollments")
 public class Enrollment {
-	
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO )
-	private String enrollmentId;
-	
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "enrollment_seq")
+	@GenericGenerator(
+			name = "enrollment_seq",
+			strategy = "com.devcollege.sequencestylegenerator.SequenceIdGenerator",
+			parameters = {
+					@Parameter(name = SequenceIdGenerator.INCREMENT_PARAM, value = "1"),
+					@Parameter(name = SequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "EN"),
+					@Parameter(name = SequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "EN"),
+					@Parameter(name = SequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d")
+			} )
+	private String enrollId;
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Column(name="course_start_datetime",nullable=false,length=10)
 	private Date courseStartDatetime;
-	
-	@Column(name="course_end_datetime",nullable=false,length=10)
+
+	@DateTimeFormat(pattern = "dd/MM/yyyy")	@Column(name="course_end_datetime",nullable=false,length=10)
 	private Date courseEndDatetime;
 
 	public Enrollment() {
@@ -36,17 +50,17 @@ public class Enrollment {
 
 	public Enrollment(String enrollmentId, Date courseStartDatetime, Date courseEndDatetime) {
 		super();
-		this.enrollmentId = enrollmentId;
+		this.enrollId = enrollmentId;
 		this.courseStartDatetime = courseStartDatetime;
 		this.courseEndDatetime = courseEndDatetime;
 	}
 
 	public String getEnrollmentId() {
-		return enrollmentId;
+		return enrollId;
 	}
 
 	public void setEnrollmentId(String enrollmentId) {
-		this.enrollmentId = enrollmentId;
+		this.enrollId = enrollmentId;
 	}
 
 	public Date getCourseStartDatetime() {
@@ -67,7 +81,7 @@ public class Enrollment {
 
 	@Override
 	public String toString() {
-		return "Enrollment [enrollmentId=" + enrollmentId + ", courseStartDatetime=" + courseStartDatetime
+		return "Enrollment [enrollmentId=" + enrollId + ", courseStartDatetime=" + courseStartDatetime
 				+ ", courseEndDatetime=" + courseEndDatetime + "]";
 	}
 	

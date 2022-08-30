@@ -1,31 +1,26 @@
 package com.devcollege.entities;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-
-import com.devcollege.sequencestylegenerator.StudentSequenceIdGenerator;
-
+import com.devcollege.sequencestylegenerator.SequenceIdGenerator;
 import java.util.List;
 
 @Entity
 @Table(name="students")
-public class Student {		
-	
+public class Student {
+
 	@Id	
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "student_seq")
 	@GenericGenerator(
 			name = "student_seq", 
-			strategy = "com.devcollege.sequencestylegenerator.StudentSequenceIdGenerator",
+			strategy = "com.devcollege.sequencestylegenerator.SequenceIdGenerator",
 			parameters = {
-				@Parameter(name = StudentSequenceIdGenerator.INCREMENT_PARAM, value = "1"),
-	            @Parameter(name = StudentSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "STD"),
-	            @Parameter(name = StudentSequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d")
+				@Parameter(name = SequenceIdGenerator.INCREMENT_PARAM, value = "1"),
+	            @Parameter(name = SequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "STD"),
+	            @Parameter(name = SequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d")
 			} )	
 	@Column(name="student_id", nullable=false, length=16)
 	private String studentId;
@@ -35,15 +30,16 @@ public class Student {
 	private String studentName;
 	
 	@Column(name="highest_qualification",nullable=false)
-	@NotNull(message="Highest Qualification should be B.E, B.Tech, Diploma, M.E, M.Tech., M.Phil., MS, BBA, BCom, BSc, MSc, BCA, MCA, LLB, MBBS, MBA")
+	@NotBlank(message="Highest Qualification should be B.E, B.Tech, Diploma, M.E, M.Tech., M.Phil., MS, BBA, BCom, BSc, MSc, BCA, MCA, LLB, MBBS, MBA")
 	private String highestQualification;
 	
 	@Column(name="student_contact_no",nullable=false,length=10)
 	@Size(min = 10, max = 10, message = "Contact number must be 10-digit numeric string")
-	@NotNull
+	@NotBlank
 	private String studentContactNo;
 	
 	@Column(name="wallet_amount",nullable=false,length=10)
+	@Digits(message="Number should contain 10 digits.", fraction = 0, integer = 10)
 	@NotNull
 	@Positive(message= "Wallet Amount must be numeric or decimal value positive value")
 	private Float walletAmount;
@@ -51,9 +47,14 @@ public class Student {
 	public Student() {
 		super();
 	}
-	
-	public Student(@NotNull String studentId,@NotNull String studentName,@NotNull String highestQualification,@NotNull String studentContactNo,
-			Float walletAmount) {
+
+	public Student(String studentId, Float walletAmount) {
+		this.studentId = studentId;
+		this.walletAmount = walletAmount;
+	}
+
+	public Student(String studentId, @NotBlank String studentName, @NotBlank String highestQualification, @NotEmpty String studentContactNo,
+				   Float walletAmount) {
 		this.studentId = studentId;
 		this.studentName = studentName;
 		this.highestQualification = highestQualification;

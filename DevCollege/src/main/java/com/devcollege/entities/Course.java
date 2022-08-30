@@ -1,46 +1,58 @@
 package com.devcollege.entities;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.*;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
+import com.devcollege.sequencestylegenerator.SequenceIdGenerator;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name="courses")
 public class Course {
 	
-	@Id	
-	@GeneratedValue(generator="system-uuid")
-	@GenericGenerator(name="system-uuid", strategy = "uuid")
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "course_seq")
+	@GenericGenerator(
+			name = "course_seq",
+			strategy = "com.devcollege.sequencestylegenerator.SequenceIdGenerator",
+			parameters = {
+					@org.hibernate.annotations.Parameter(name = SequenceIdGenerator.INCREMENT_PARAM, value = "1"),
+					@org.hibernate.annotations.Parameter(name = SequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "CRS"),
+					@org.hibernate.annotations.Parameter(name = SequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d")
+			} )
 	@Column(name="course_id", updatable = false, nullable=false)
 	private String courseId;
 	
 	@Column(name="course_name",nullable=false,length=100)
-	@NotNull
+	@NotBlank(message = "Course name should not be null")
 	private String courseName;
 	
 	@Column(name="course_description",nullable=false)
-	@NotNull
+	@NotBlank
 	private String courseDescription;
 	
 	@Column(name="no_of_registration_allowed",nullable=false,length=100)
-	@NotNull
-	private int noOfRegistrationAllowed;
+	@NotBlank
+	@Positive(message= "NoOfSlot must be numeric value")
+	private int noOfSlot;
 	
 	@Column(name="course_fee",nullable=false,length=100)
 	@NotNull
+	@Positive(message= "Course Fee must be numeric value")
 	private float courseFee;
 	
 	@Column(name="course_duration",nullable=false,length=100)
 	@NotNull
+	@Positive(message= "Course Duration must be numeric value")
 	private int courseDuration;
 	
 	@Column(name="course_tag",nullable=false,length=100)
-	@NotNull
+	@NotBlank(message = "Course Tag should be B.E, B.Tech, Diploma, M.E, M.Tech., M.Phil., MS, BBA, BCom, BSc, MSc, BCA, MCA, LLB, MBBS, MBA")
 	private String courseTag;
 
 	public Course() {
@@ -52,7 +64,7 @@ public class Course {
 		this.courseId = courseId;
 		this.courseName = courseName;
 		this.courseDescription = courseDescription;
-		this.noOfRegistrationAllowed = noOfRegistrationAllowed;
+		this.noOfSlot = noOfRegistrationAllowed;
 		this.courseFee = courseFee;
 		this.courseDuration = courseDuration;
 		this.courseTag = courseTag;
@@ -82,12 +94,12 @@ public class Course {
 		this.courseDescription = courseDescription;
 	}
 
-	public int getNoOfRegistrationAllowed() {
-		return noOfRegistrationAllowed;
+	public int getNoOfSlot() {
+		return noOfSlot;
 	}
 
-	public void setNoOfRegistrationAllowed(int noOfRegistrationAllowed) {
-		this.noOfRegistrationAllowed = noOfRegistrationAllowed;
+	public void setNoOfSlot(int noOfSlot) {
+		this.noOfSlot = noOfSlot;
 	}
 
 	public float getCourseFee() {
@@ -117,7 +129,7 @@ public class Course {
 	@Override
 	public String toString() {
 		return "Course [courseId=" + courseId + ", courseName=" + courseName + ", courseDescription="
-				+ courseDescription + ", noOfRegistrationAllowed=" + noOfRegistrationAllowed + ", courseFee="
+				+ courseDescription + ", noOfRegistrationAllowed=" + noOfSlot + ", courseFee="
 				+ courseFee + ", courseDuration=" + courseDuration + ", courseTag=" + courseTag + "]";
 	}
 	

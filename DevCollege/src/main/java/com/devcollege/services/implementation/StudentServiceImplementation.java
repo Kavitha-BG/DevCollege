@@ -1,6 +1,9 @@
 package com.devcollege.services.implementation;
 
+import java.lang.constant.Constable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 import com.devcollege.entities.StudentWallet;
@@ -12,7 +15,7 @@ import com.devcollege.entities.Student;
 import com.devcollege.repositories.StudentRepository;
 import com.devcollege.services.StudentService;
 import com.devcollege.exceptions.*;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Service
 public class StudentServiceImplementation implements StudentService {
@@ -33,10 +36,13 @@ public class StudentServiceImplementation implements StudentService {
 	@Override
 	public String updateStudentById(Student student, String studentId) {
 		Student updateStudent = studentRepository.findById(studentId).orElse(null);
-		if (updateStudent != null) {
+		if (!updateStudent.getStudentName().isEmpty() || updateStudent.getStudentContactNo().length() != 0 ||
+				!updateStudent.getHighestQualification().isEmpty()) {
+
 			updateStudent.setStudentName(student.getStudentName());
 			updateStudent.setHighestQualification(student.getHighestQualification());
 			updateStudent.setStudentContactNo(student.getStudentContactNo());
+
 			studentRepository.save(updateStudent);
 			return "Successfully updated student detail for course: " + studentId;
 		} else {
@@ -48,7 +54,7 @@ public class StudentServiceImplementation implements StudentService {
 	public void deleteStudent(String studentId) {
 		Student student = studentRepository.findById(studentId).orElse(null);
 		if (student != null) {
-//			studentRepository.deleteById(studentId);
+
 			studentRepository.delete(student);
 //			return "Successfully deleted student detail for course: " + studentId;
 		} else {
@@ -58,7 +64,7 @@ public class StudentServiceImplementation implements StudentService {
 
 	@Override
 	public Student getStudentById(String studentId) {
-		Student student = studentRepository.findByStudentId(studentId);
+		Student student = studentRepository.findById(studentId).orElse(null);
 		if (student != null) {
 			return student;
 		} else {
@@ -66,9 +72,8 @@ public class StudentServiceImplementation implements StudentService {
 		}
 	}
 
-
 	@Override
-	public List<Student> getAllStudent() throws StudentNotFoundException {
+	public List<Student> getAllStudents() throws StudentNotFoundException {
 		List<Student> studentList = studentRepository.findAll();
 		if (!studentList.isEmpty()) {
 			return studentRepository.findAll();
@@ -77,41 +82,27 @@ public class StudentServiceImplementation implements StudentService {
 		}
 	}
 
-//	@Override
-//	public Student addWalletAmount(@RequestParam String studentId, Float amount) {
-//		try {
-//			StudentWallet studentWallet = studentRepository.findByStudentId(studentId).get(0);
-//			studentWallet.getAmount() = studentWallet.getAmount() + amount;
-//			studentRepository.save(studentWallet);
-//		} catch(IndexOutOfBoundsException exception) {
-//
-//		}
+	@Override
+	public Float addWalletAmount(String studentId, StudentWallet studentWallet ) {
+		Student student = studentRepository.findById(studentId).orElseThrow(()
+				-> new EmptyInputException("Student Id: " + " doesn't exist."));
+			Float finalAmount = student.getWalletAmount() + studentWallet.getAmount();
+			student.setWalletAmount(finalAmount);
+			studentRepository.save(student);
+			return finalAmount;
+	}
 
-	//	if(walletAmount != null) {
-//			throw new EmptyInputException("Student Id: "+ " doesn't exist.");
-//		} else {
-//			Student savedAmount = studentRepository.save(walletAmount);
-//			return savedAmount;
-//		}
-//	}
+	@Override
+	public Map<String,String> getWalletDetail(String studentId) {
+		Student retrieveStudentWallet = studentRepository.findById(studentId).orElseThrow(()
+				-> new EmptyInputException("Student Id: " + " doesn't exist."));
 
-//	@Override
-//	public Student getWalletDetail() {
-//		try {
-//			StudentWallet studentWallet = studentRepository.findByStudentId(getWalletDetail();
-//			if(studentWallet != null){
-//				return studentRepository.findById(getWalletDetail());
-//				studentWallet.getAmount() = studentWallet.getAmount() + amount;
-//				studentRepository.save(studentWallet);
-//			}else{
-//				throw new StudentNotFoundException("No data found..!!");
-//			}
-//
-//			List<Student> studentList = studentRepository.findAll();
-//			if(!studentList.isEmpty()) {
-//				return studentRepository.findAll();
-//			} else {
-//				throw new StudentNotFoundException("No data found..!!");
-//			}
-//	}
+		Map<String,String> details = new HashMap<>();
+		details.put("StudentId", studentId);
+		details.put("WalletAmount", "" +retrieveStudentWallet.getWalletAmount());
+
+		return details;
+	}
+
 }
+

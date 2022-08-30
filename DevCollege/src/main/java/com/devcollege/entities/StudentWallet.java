@@ -4,7 +4,7 @@ import javax.validation.constraints.Positive;
 
 public class StudentWallet {
 	
-	@Positive
+	@Positive(message = "Amount must be positive numeric value.")
 	private Float amount;
 
 	public Float getAmount() {

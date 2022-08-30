@@ -1,8 +1,13 @@
 package com.devcollege.services;
 
 import java.util.List;
+import java.util.Map;
+
 import com.devcollege.entities.Student;
+import com.devcollege.entities.StudentWallet;
 import com.devcollege.exceptions.StudentNotFoundException;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 public interface StudentService {
@@ -15,11 +20,10 @@ public interface StudentService {
 	
 	public Student getStudentById(String studentId);
 	
-	public List<Student> getAllStudent() throws StudentNotFoundException;
-	
-	
-//	public Student addWalletAmount(Float amount);
-//
-//	public Student getWalletDetail();
-//
+	public List<Student> getAllStudents() throws StudentNotFoundException;
+
+	public Float addWalletAmount(String studentId,StudentWallet studentWallet);
+
+	public Map<String,String> getWalletDetail(java.lang.String studentId);
+
 }
