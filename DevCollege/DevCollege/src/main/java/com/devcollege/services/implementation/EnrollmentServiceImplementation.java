@@ -5,17 +5,22 @@ import com.devcollege.entities.Enrollment;
 import com.devcollege.entities.Student;
 import com.devcollege.exceptions.EmptyInputException;
 import com.devcollege.exceptions.EnrollmentNotFoundException;
+import com.devcollege.exceptions.NotFoundException;
+import com.devcollege.payloads.EnrollmentDto;
+import com.devcollege.repositories.CourseRepository;
 import com.devcollege.repositories.EnrollmentRepository;
+import com.devcollege.repositories.StudentRepository;
 import com.devcollege.services.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.swing.text.html.parser.Entity;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,41 +29,71 @@ public class EnrollmentServiceImplementation implements EnrollmentService {
 	@Autowired
 	private EnrollmentRepository enrollmentRepository;
 
+	@Autowired
+	private CourseRepository courseRepository;
+
+	@Autowired
+	private StudentRepository studentRepository;
+
 	@Override
-	public Enrollment addEnrollmentForCourse(Enrollment enrollment) {
-		Student student = new Student();
-		Course course = new Course();
-//		Enrollment enrolledStudent = enrollmentRepository.findById(student.getStudentId());
-		if( student.getStudentId().isEmpty() && course.getCourseId().isEmpty() ) {
-			throw new EmptyInputException();
-		} else {
-		//	Enrollment enrolledDetails = enrollmentRepository.findById(student.getStudentId());
-//			enrolledStudent.getCourseEndDatetime() = course.getCourseDuration() +  enrollment.getCourseStartDatetime();
-//			student.getWalletAmount() -= course.getCourseFee();
-//			enrolledStudent.setCourseStatus("Allocated");
-//			return enrolledStudent;
-			return null;
-		}
+	public String addEnrollmentForCourse(Enrollment enrollment) throws EnrollmentNotFoundException {
+		Student enrolledStudent = studentRepository.findById(enrollment.getStudentId()).orElseThrow(()
+				-> new NotFoundException("studentId","",enrollment.getStudentId()));
+
+		Course enrolledCourse = courseRepository.findById(enrollment.getCourseId()).orElseThrow(()
+				-> new NotFoundException("courseId","",enrollment.getCourseId()));
+		Calendar calender = Calendar.getInstance();
+		calender.setTime(enrollment.getCourseStartDatetime());
+		calender.add(Calendar.MINUTE, enrolledCourse.getCourseDuration());
+		Date date = calender.getTime();
+		enrollment.setCourseEndDatetime(date);
+
+		if(enrolledStudent.getWalletAmount()>=enrolledCourse.getCourseFee()){
+			enrolledStudent.setWalletAmount(enrolledStudent.getWalletAmount() - enrolledCourse.getCourseFee());
+			studentRepository.save(enrolledStudent);
+			enrollment.setCourseStatus("Allocated");
+			enrollment.setStudentId(enrollment.getStudentId());
+			enrollment.setCourseId(enrollment.getCourseId());
+			enrollment.setCourseStartDatetime(enrollment.getCourseStartDatetime());
+			Enrollment getId = enrollmentRepository.save(enrollment);
+
+			return "Successfully Enrolled for " + enrolledStudent.getStudentName() + " in course " + enrolledCourse.getCourseName()
+					+ " for " + getId.getEnrolId();
+		}else
+			return "Student wallet amount should be greater than course fee";
 	}
 
 	@Override
-	public Enrollment getEnrollmentById(String enrolId) throws EnrollmentNotFoundException {
-		Enrollment enrollment = enrollmentRepository.findById(enrolId).orElse(null);
-		if (enrollment != null) {
-			return enrollment;
-		} else {
-			throw new EnrollmentNotFoundException("Enrollment Id: " + enrolId + " does not exist.");
-		}
+	public EnrollmentDto getEnrollmentById(String enrolId) throws EnrollmentNotFoundException {
+		Enrollment enrollment = enrollmentRepository.findById(enrolId).orElseThrow(()
+				-> new EnrollmentNotFoundException("Enrollment Id: " + enrolId + " does not exist."));
+
+		Student student = studentRepository.findById(enrollment.getStudentId()).orElseThrow();
+
+		Course course = courseRepository.findById(enrollment.getCourseId()).orElseThrow();
+
+		EnrollmentDto enrolledList = new EnrollmentDto();
+		enrolledList.setEnrolId(enrollment.getEnrolId());
+		enrolledList.setCourseId(enrollment.getCourseId());
+		enrolledList.setCourseStatus(enrollment.getCourseStatus());
+		enrolledList.setStudentId(enrollment.getStudentId());
+		enrolledList.setCourseStartDatetime(enrollment.getCourseStartDatetime());
+		enrolledList.setCourseEndDatetime(enrollment.getCourseEndDatetime());
+		enrolledList.setCourseLink("http://localhost:8080/course/get/" + course.getCourseId());
+		enrolledList.setStudentLink("http://localhost:8080/student/get/" + student.getStudentId());
+
+		return enrolledList;
 	}
 
 	@Override
 	public List<Enrollment> getAllEnrollments() throws EnrollmentNotFoundException {
 		List<Enrollment> enrollmentList = enrollmentRepository.findAll();
-		if (!enrollmentList.isEmpty()) {
-			return enrollmentRepository.findAll();
-		} else {
-			throw new EnrollmentNotFoundException("No data found..!!");
+		List<EnrollmentDto> enrollmentDtos = new ArrayList<>();
+		for (Enrollment enrol: enrollmentList) {
+			EnrollmentDto enrollmentDto= getEnrollmentById(enrol.getEnrolId());
+			enrollmentDtos.add(enrollmentDto);
 		}
+		return enrollmentDtos;
 	}
 
 	@Override
@@ -99,8 +134,8 @@ public class EnrollmentServiceImplementation implements EnrollmentService {
 				(enrollment.getCourseStatus().equals("Completed") &&
 						courseId.getNoOfSlot() < courseId.getNoOfSlot())) {
 			return courseId + courseId.getCourseName() + " available for enrolment.";
-		}else {
-	//		return new EnrollmentNotFoundException("Course Id: " + courseId + " does not exist");
+		} else {
+			//		return new EnrollmentNotFoundException("Course Id: " + courseId + " does not exist");
 			return null;
 		}
 	}
@@ -109,46 +144,19 @@ public class EnrollmentServiceImplementation implements EnrollmentService {
 	public List<String> courseSuggestion(Student studentId, Course course) throws EnrollmentNotFoundException {
 		List<String> courseList = new ArrayList<>();
 		enrollmentRepository.findAll();
-		if(studentId.getHighestQualification().equalsIgnoreCase(course.getCourseTag())){
+		if (studentId.getHighestQualification().equalsIgnoreCase(course.getCourseTag())) {
 
-			ResponseEntity<Course[]> responseEntity =
-					restTemplate.getForEntity("http://localhost:8080/course/getAll", Course[].class);
-			Course[] courseArray = responseEntity.getBody();
-			return Arrays.stream(courseArray)
-					.map(Course::getCourseName)
-					.collect(Collectors.toList());
+//			ResponseEntity<Course[]> responseEntity =
+//					restTemplate.getForEntity("http://localhost:8080/course/getAll", Course[].class);
+//			Course[] courseArray = responseEntity.getBody();
+//			return Arrays.stream(courseArray)
+//					.map(Course::getCourseName)
+//					.collect(Collectors.toList());
+//		} else {
+//			throw  new EnrollmentNotFoundException("Student Id : " + studentId + " doesn't exist.");
+//		}
 
-		} else {
-			throw  new EnrollmentNotFoundException("Student Id : " + studentId + " doesn’t exist.");
 		}
+		return null;
 	}
-
-
-	RestTemplate restTemplate = new RestTemplate();
-
-	private static final String viewCoursesDetailsURL = "http://localhost:8080/student/getAll";
-	private static final String viewStudentsDetailsURL = "http://localhost:8080/student/getAll";
-
-	public ResponseEntity<Course> allCourses(Course course) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-
-		HttpEntity<Course> entity = new HttpEntity<Course>(course, headers);
-		ResponseEntity<Course> response = restTemplate.exchange(viewCoursesDetailsURL,
-				HttpMethod.GET, entity, Course.class);
-		return response;
-	}
-
-	public ResponseEntity<Student> allStudents(Student student) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-
-		HttpEntity<Student> entity = new HttpEntity<Student>(student, headers);
-		ResponseEntity<Student> response = restTemplate.exchange(viewStudentsDetailsURL,
-				HttpMethod.GET, entity, Student.class);
-		return response;
-	}
-
 }
-
-

@@ -6,9 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import javax.validation.ConstraintViolation;
-
 import com.devcollege.exceptions.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,12 +16,20 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.context.request.WebRequest;
 
 @ControllerAdvice
 public class MyControllerAdvice {
-	
+
+	@ExceptionHandler(NotFoundException.class)
+	public ResponseEntity<Map<String,String>> handleEmptyInput(NotFoundException ex) {
+		Map<String,String> errorMessage = new HashMap<>();
+		errorMessage.put("message",ex.getPassedValue()+" doesn't exist " );
+		errorMessage.put("error","Failed to add details");
+		return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+	}
+
+
+
 	@ExceptionHandler(EmptyInputException.class)
 	public ResponseEntity<String> handleEmptyInput(EmptyInputException emptyInputException) {
 		return new ResponseEntity<String>("Failed to add details.", HttpStatus.BAD_REQUEST);
@@ -41,17 +47,18 @@ public class MyControllerAdvice {
 
 	@ExceptionHandler(StudentNotFoundException.class)
 	public ResponseEntity<String> handleStudentNotFoundException(StudentNotFoundException studentNotFoundException) {
-		return new ResponseEntity<String>("Student Id doesn't exist. Failed to Get details.", HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<String>("Failed to Get Student details.", HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(CourseNotFoundException.class)
 	public ResponseEntity<String> handleCourseNotFoundException(CourseNotFoundException courseNotFoundException) {
-		return new ResponseEntity<String>("Course Id doesn't exist. Failed to Get Course details.", HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<String>("Failed to Get Course details.", HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(EnrollmentNotFoundException.class)
 	public ResponseEntity<String> handleEnrollmentNotFoundException(EnrollmentNotFoundException enrollmentNotFoundException) {
-		return new ResponseEntity<String>("Enrol Id doesn't exist. Failed to Get Course details.", HttpStatus.BAD_REQUEST);
+		System.out.println("++++++++++++++++======="+enrollmentNotFoundException.getMessage());
+		return new ResponseEntity<String>(enrollmentNotFoundException.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
 

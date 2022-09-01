@@ -51,13 +51,14 @@ public class Enrollment {
 	@Column(name="course_status",nullable=false)
 	private String courseStatus;
 
-	@Column(name="course_link",insertable = false, updatable = false, nullable=false)
-	private String courseLink = "http://localhost:8080/student/getAll";
-
-	@Column(name="student_link",insertable = false, updatable = false,nullable=false)
-	private String studentLink = "http://localhost:8080/student/getAll";
+////	@Column(name="course_link",insertable = false, updatable = false, nullable=false)
+//	private String courseLink ;
+//
+////	@Column(name="student_link",insertable = false, updatable = false,nullable=false)
+//	private String studentLink;
 
 	public Enrollment() {
+
 	}
 
 	@Override
@@ -69,8 +70,8 @@ public class Enrollment {
 				", courseStartDatetime=" + courseStartDatetime +
 				", courseEndDatetime=" + courseEndDatetime +
 				", courseStatus='" + courseStatus + '\'' +
-				", courseLink='" + courseLink + '\'' +
-				", studentLink='" + studentLink + '\'' +
+//				", courseLink='" + courseLink + '\'' +
+//				", studentLink='" + studentLink + '\'' +
 				'}';
 	}
 
@@ -80,6 +81,22 @@ public class Enrollment {
 
 	public void setEnrolId(String enrolId) {
 		this.enrolId = enrolId;
+	}
+
+	public String getCourseId() {
+		return courseId;
+	}
+
+	public void setCourseId(String courseId) {
+		this.courseId = courseId;
+	}
+
+	public String getStudentId() {
+		return studentId;
+	}
+
+	public void setStudentId(String studentId) {
+		this.studentId = studentId;
 	}
 
 	public Date getCourseStartDatetime() {
@@ -106,21 +123,21 @@ public class Enrollment {
 		this.courseStatus = courseStatus;
 	}
 
-	public String getCourseLink() {
-		return courseLink;
-	}
-
-	public void setCourseLink(String courseLink) {
-		this.courseLink = courseLink;
-	}
-
-	public String getStudentLink() {
-		return studentLink;
-	}
-
-	public void setStudentLink(String studentLink) {
-		this.studentLink = studentLink;
-	}
+//	public String getCourseLink() {
+//		return courseLink;
+//	}
+//
+//	public void setCourseLink(String courseLink) {
+//		this.courseLink = courseLink;
+//	}
+//
+//	public String getStudentLink() {
+//		return studentLink;
+//	}
+//
+//	public void setStudentLink(String studentLink) {
+//		this.studentLink = studentLink;
+//	}
 
 	public Enrollment(String enrolId, String courseId, String studentId, Date courseStartDatetime, Date courseEndDatetime, String courseStatus, String courseLink, String studentLink) {
 		this.enrolId = enrolId;
@@ -129,8 +146,8 @@ public class Enrollment {
 		this.courseStartDatetime = courseStartDatetime;
 		this.courseEndDatetime = courseEndDatetime;
 		this.courseStatus = courseStatus;
-		this.courseLink = courseLink;
-		this.studentLink = studentLink;
+//		this.courseLink = courseLink;
+//		this.studentLink = studentLink;
 	}
 
 

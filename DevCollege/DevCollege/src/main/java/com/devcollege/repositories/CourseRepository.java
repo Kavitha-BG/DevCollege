@@ -11,9 +11,8 @@ public interface CourseRepository extends JpaRepository<Course, String> {
 
 	Course findByCourseId(String courseId);
 
-    @Query(nativeQuery = true, value = "Select course_status from enrollments where student_id = 'Allocated'")
+    @Query(nativeQuery = true, value = "Select course_status from enrollments where student_id := 'Allocated'")
     default int isCourseAllocated(String courseId, String courseStatus) {
         return 0;
     }
-
 }

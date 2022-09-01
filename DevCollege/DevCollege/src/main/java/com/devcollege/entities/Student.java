@@ -26,6 +26,7 @@ public class Student {
 
 	@Column(name="student_name",nullable=false,length=50)
 	@NotBlank(message = "Student name should not be null")
+	@Pattern(regexp = "^[A-Za-z]+[A-Za-z ]*$", message = " Student Name should be valid")
 	private String studentName;
 	
 	@Column(name="highest_qualification",nullable=false)

@@ -5,6 +5,7 @@ import com.devcollege.entities.Enrollment;
 import com.devcollege.entities.Student;
 import com.devcollege.exceptions.EnrollmentNotFoundException;
 import com.devcollege.exceptions.StudentNotFoundException;
+import com.devcollege.payloads.EnrollmentDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -14,9 +15,9 @@ import java.util.List;
 
 public interface EnrollmentService {
 	
-	public Enrollment addEnrollmentForCourse(Enrollment enrollment);
+	public String addEnrollmentForCourse(Enrollment enrollment) throws EnrollmentNotFoundException;
 	
-	public Enrollment getEnrollmentById(String enrolId) throws EnrollmentNotFoundException;
+	public EnrollmentDto getEnrollmentById(String enrolId) throws EnrollmentNotFoundException;
 	
 	public List<Enrollment> getAllEnrollments() throws EnrollmentNotFoundException;
 

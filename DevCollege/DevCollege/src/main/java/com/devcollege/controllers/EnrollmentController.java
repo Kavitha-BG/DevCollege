@@ -4,19 +4,15 @@ import com.devcollege.entities.Course;
 import com.devcollege.entities.Enrollment;
 import com.devcollege.entities.Student;
 import com.devcollege.exceptions.EnrollmentNotFoundException;
-import com.devcollege.exceptions.StudentNotFoundException;
+import com.devcollege.payloads.EnrollmentDto;
 import com.devcollege.services.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
-
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Validated
@@ -26,15 +22,15 @@ public class EnrollmentController {
 	private EnrollmentService enrollmentService;
 
 	@PostMapping("/add")
-	public ResponseEntity<String> addEnrolmentForCourse(@Valid @RequestBody Enrollment enrollment) {
-		Enrollment savedEnrollment = enrollmentService.addEnrollmentForCourse(enrollment);
-		return ResponseEntity.ok("Successfully Added Student details for "+ enrollment.getEnrolId());
+	public ResponseEntity<String> addEnrolmentForCourse(@Valid @RequestBody Enrollment enrollment) throws EnrollmentNotFoundException{
+		String savedEnrollment = enrollmentService.addEnrollmentForCourse(enrollment);
+		return ResponseEntity.ok(savedEnrollment);
 	}
 
-	@GetMapping("/get/{enrollId}")
-	public ResponseEntity<Enrollment> getEnrollmentById(@Valid @PathVariable String enrolId) throws EnrollmentNotFoundException {
-		Enrollment retrieveEnrollment = enrollmentService.getEnrollmentById(enrolId);
-		return new ResponseEntity<Enrollment>(retrieveEnrollment, HttpStatus.OK);
+	@GetMapping("/get/{enrolId}")
+	public ResponseEntity<EnrollmentDto> getEnrollmentById(@Valid @PathVariable String enrolId) throws EnrollmentNotFoundException {
+		EnrollmentDto retrieveEnrollment = enrollmentService.getEnrollmentById(enrolId);
+		return new ResponseEntity<EnrollmentDto>(retrieveEnrollment, HttpStatus.OK);
 	}
 
 	@GetMapping("/getAll")
@@ -43,10 +39,10 @@ public class EnrollmentController {
 		return new ResponseEntity<List<Enrollment>>(enrollmentList, HttpStatus.OK);
 	}
 
-	@GetMapping("/get/{studentId}")
-	public ResponseEntity<Enrollment> getEnrollmentByStudentId(@Valid @PathVariable Student studentId, @RequestBody Enrollment enrollment) throws EnrollmentNotFoundException{
-		Enrollment retrieveEnrollment = enrollmentService.getEnrollmentById(enrollment.getEnrolId()) ;
-		return new ResponseEntity<Enrollment>(retrieveEnrollment, HttpStatus.OK);
+	@GetMapping("/getstudent/{studentId}")
+	public ResponseEntity<EnrollmentDto> getEnrollmentByStudentId(@Valid @PathVariable Student studentId, @RequestBody Enrollment enrollment) throws EnrollmentNotFoundException{
+		EnrollmentDto retrieveEnrollment = enrollmentService.getEnrollmentById(enrollment.getEnrolId()) ;
+		return new ResponseEntity<EnrollmentDto>(retrieveEnrollment, HttpStatus.OK);
 	}
 
 	@PostMapping("/status/{enrollId}")
@@ -63,21 +59,11 @@ public class EnrollmentController {
 	}
 
 	@GetMapping("/suggestion/{studentId}")
-	//		,  produces= MediaType.APPLICATION_JSON_VALUE)
+			//, produces= MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object[]> courseSuggestion(@PathVariable String studentId) {
-	//	Object[] suggestCourse = enrollmentService.courseSuggestion(studentId);
-	//	return new ResponseEntity<Object[]>(suggestCourse, HttpStatus.OK);
+//		Object[] suggestCourse = enrollmentService.courseSuggestion(studentId);
+//		return new ResponseEntity<Object[]>(suggestCourse, HttpStatus.OK);
 		return null;
 	}
-
-//	@PostMapping(value = "/redirect")
-//	public RedirectView redirect(@RequestParam Map<String,String> input){
-//
-//		System.out.println(input);
-//		RedirectView redirectView = new RedirectView();
-//		redirectView.setUrl("http://localhost:8080/course/getAll");
-//		return redirectView;
-//
-//	}
 
 }
