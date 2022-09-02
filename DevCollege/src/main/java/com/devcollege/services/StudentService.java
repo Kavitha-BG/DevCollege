@@ -5,20 +5,19 @@ import java.util.Map;
 
 import com.devcollege.entities.Student;
 import com.devcollege.entities.StudentWallet;
+import com.devcollege.exceptions.CourseNotFoundException;
 import com.devcollege.exceptions.StudentNotFoundException;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 public interface StudentService {
 	
 	public Student addStudent(Student student);
 
-	public String updateStudentById(Student student, String studentId);
+	public Student updateStudentById(Student student, String studentId);
 	
-	public void deleteStudent(String studentId);
+	public void deleteStudent(String studentId) throws CourseNotFoundException;
 	
-	public Student getStudentById(String studentId);
+	public Student getStudentById(String studentId) throws StudentNotFoundException;
 	
 	public List<Student> getAllStudents() throws StudentNotFoundException;
 

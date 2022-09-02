@@ -3,7 +3,9 @@ package com.devcollege.controllers;
 import com.devcollege.entities.Course;
 import com.devcollege.entities.Enrollment;
 import com.devcollege.entities.Student;
-import com.devcollege.exceptions.StudentNotFoundException;
+import com.devcollege.exceptions.EnrollmentNotFoundException;
+import com.devcollege.exceptions.NotFoundException;
+import com.devcollege.payloads.EnrollmentDto;
 import com.devcollege.services.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,42 +23,48 @@ public class EnrollmentController {
 	private EnrollmentService enrollmentService;
 
 	@PostMapping("/add")
-	public ResponseEntity<String> addEnrolmentForCourse(@Valid @RequestBody Enrollment enrollment) {
-		Enrollment savedEnrollment = enrollmentService.addEnrollmentForCourse(enrollment);
-		return ResponseEntity.ok("Successfully Added Student details for "+ enrollment.getEnrollmentId());
+	public ResponseEntity<String> addEnrolmentForCourse(@Valid @RequestBody Enrollment enrollment) throws EnrollmentNotFoundException{
+		String savedEnrollment = enrollmentService.addEnrollmentForCourse(enrollment);
+		return ResponseEntity.ok(savedEnrollment);
 	}
 
-	@GetMapping("/get/{enrollId}")
-	public ResponseEntity<Enrollment> getEnrollmentById(@Valid @PathVariable String enrollId) {
-		Enrollment retrieveEnrollment = enrollmentService.getEnrollmentById(enrollId);
-		return new ResponseEntity<Enrollment>(retrieveEnrollment, HttpStatus.OK);
+	@GetMapping("/get/{enrolId}")
+	public ResponseEntity<EnrollmentDto> getEnrollmentById(@Valid @PathVariable String enrolId) throws EnrollmentNotFoundException {
+		EnrollmentDto retrieveEnrollment = enrollmentService.getEnrollmentById(enrolId);
+		return new ResponseEntity<EnrollmentDto>(retrieveEnrollment, HttpStatus.OK);
 	}
 
 	@GetMapping("/getAll")
-	public ResponseEntity<List<Enrollment>> getAllEnrollments() throws StudentNotFoundException {
-		List<Enrollment> enrollmentList = enrollmentService.getAllEnrollments();
-		return new ResponseEntity<List<Enrollment>>(enrollmentList, HttpStatus.OK);
+	public ResponseEntity<List<EnrollmentDto>> getAllEnrollments() throws EnrollmentNotFoundException {
+		List<EnrollmentDto> enrollmentList = enrollmentService.getAllEnrollments();
+		return new ResponseEntity<List<EnrollmentDto>>(enrollmentList, HttpStatus.OK);
 	}
 
-	@GetMapping("/get/{studentId}")
-	public ResponseEntity<Enrollment> getEnrollmentByStudentId(@Valid @PathVariable String enrollID) {
-		Enrollment retrieveEnrollment = enrollmentService.getEnrollmentById(enrollID);
-		return new ResponseEntity<Enrollment>(retrieveEnrollment, HttpStatus.OK);
+	@GetMapping("/getstudent/{studentId}")
+	public ResponseEntity<EnrollmentDto> getEnrollmentByStudentId(@Valid @PathVariable Student studentId, @RequestBody Enrollment enrollment) throws EnrollmentNotFoundException{
+		EnrollmentDto retrieveEnrollment = enrollmentService.getEnrollmentById(enrollment.getEnrolId()) ;
+		return new ResponseEntity<EnrollmentDto>(retrieveEnrollment, HttpStatus.OK);
 	}
 
-	@GetMapping("/status/{enrollId}")
-	public ResponseEntity<Enrollment> changeStatus(@Valid @PathVariable String enrollId) {
-		return null;
+	@PostMapping("/status/{enrollId}")
+	public ResponseEntity<String> changeStatus(@PathVariable String enrollId) throws EnrollmentNotFoundException{
+		String updatedStatus = enrollmentService.changeStatus(enrollId);
+		return ResponseEntity.ok("Successfully change the status from "
+				+ getAllEnrollments().getStatusCode() + "to"  + updatedStatus + " for enrol id "+ enrollId);
 	}
 
 	@GetMapping("/availability/{courseId}")
-	public ResponseEntity<Course> checkAvailability(@Valid @PathVariable String courseId) {
-		return null;
+	public ResponseEntity<String> checkAvailability(@PathVariable String courseId) throws NotFoundException {
+		String checkCourseAvailability = enrollmentService.checkAvailability(courseId);
+		return ResponseEntity.ok(courseId + " " +" available for enrolment.");
 	}
 
 	@GetMapping("/suggestion/{studentId}")
-	public ResponseEntity<Student> courseSuggestion(@Valid @PathVariable String studentId) {
-		return null;
+			//, produces= MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Course>> courseSuggestion(@PathVariable String studentId) throws NotFoundException, EnrollmentNotFoundException {
+		List<Course> suggestCourse = enrollmentService.courseSuggestion(studentId);
+		return new ResponseEntity<List<Course>>(suggestCourse, HttpStatus.OK);
+//		return null;
 	}
+
 }
-//@RequestParam(value="studentId", required=false)

@@ -1,10 +1,9 @@
 package com.devcollege.services.implementation;
 
 import com.devcollege.entities.Course;
-import com.devcollege.exceptions.EmptyInputException;
-import com.devcollege.exceptions.InvalidInputException;
-import com.devcollege.exceptions.NoSuchElementFoundException;
-import com.devcollege.exceptions.StudentNotFoundException;
+import com.devcollege.entities.Enrollment;
+import com.devcollege.entities.Student;
+import com.devcollege.exceptions.*;
 import com.devcollege.repositories.CourseRepository;
 import com.devcollege.services.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,7 @@ public class CourseServiceImplementation implements CourseService {
 	public Course addCourse(Course course) {
 		if (course.getCourseName().isEmpty() || course.getCourseDescription().isEmpty() || course.getCourseFee() == 0
 				|| course.getCourseDuration() == 0 || course.getNoOfSlot() == 0 || course.getCourseTag().isEmpty()) {
-			throw new EmptyInputException();
+			throw new NoDataFoundException("errorMessage");
 		} else {
 			Course savedCourse = courseRepository.save(course);
 			return savedCourse;
@@ -29,7 +28,7 @@ public class CourseServiceImplementation implements CourseService {
 	}
 
 	@Override
-	public String updateCourseById(Course course, String courseId) {
+	public String updateCourseById(Course course, String courseId) throws NoSuchElementFoundException{
 		Course updateCourse = courseRepository.findById(courseId).orElse(null);
 		if (updateCourse != null) {
 
@@ -41,41 +40,53 @@ public class CourseServiceImplementation implements CourseService {
 			updateCourse.setCourseTag(course.getCourseTag());
 
 			courseRepository.save(updateCourse);
-			return "Successfully updated student detail for course: " + courseId;
+			return "Successfully updated course detail for course: " + courseId;
 		} else {
-			throw new NoSuchElementFoundException(courseId + " doesn't exist.");
+			throw new NotFoundException("courseId","", courseId);
 		}
 	}
 
 	@Override
-	public void deleteCourse(String courseId) {
+	public String deleteCourse(String courseId) throws InvalidInputException {
 		Course course = courseRepository.findById(courseId).orElse(null);
 		if (course != null) {
-			courseRepository.delete(course);
-//			return "Successfully deleted student detail for course: " + studentId;
+			//int courseAllocationCounter = 0;
+			int courseAllocation = courseRepository.isCourseAllocated(courseId, "Allocated") ;
+
+			if(courseAllocation > 0) {
+				return "You cannot delete a course "+ courseId
+				+ " , It is allocated to some student ";
+			} else {
+				courseRepository.deleteById(courseId);
+				return "Successfully deleted course detail for course: " + courseId;
+			}
 		} else {
-			throw new InvalidInputException(courseId + " doesn't exist.");
+				throw new NotFoundException("courseId","", courseId);
 		}
 	}
 
 	@Override
-	public Course getCourseById(String courseId) {
-		Course course = courseRepository.findById(courseId).orElse(null);
-		if (course != null) {
-			return course;
-		} else {
-			throw new StudentNotFoundException("Course Id: " + courseId + " does not exist.");
-		}
+	public Course getCourseById(String courseId) throws CourseNotFoundException {
+//		Course course = courseRepository.findById(courseId).orElse(null);
+//		if (course != null) {
+//			return course;
+//		} else {
+//			throw new CourseNotFoundException("Course Id : " + courseId + " does not exist.");
+//		}
+
+		Course course = courseRepository.findById(courseId).orElseThrow(()
+				-> new NotFoundException("courseId","", courseId));
+		return course;
 	}
 
 
 	@Override
-	public List<Course> getAllCourses() throws StudentNotFoundException {
+	public List<Course> getAllCourses() throws NoDataFoundException {
 		List<Course> courseList = courseRepository.findAll();
 		if (!courseList.isEmpty()) {
 			return courseRepository.findAll();
 		} else {
-			throw new StudentNotFoundException("No data found..!!");
+			throw new NoDataFoundException("errorMessage");
 		}
 	}
 

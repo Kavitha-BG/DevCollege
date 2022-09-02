@@ -1,36 +1,67 @@
 package com.devcollege.exceptions;
 
-public class StudentNotFoundException extends RuntimeException {
-	
-//	private static final long serialVersionUID = 1L;
-//	private String errorCode;
-//	private String errorMessage;
-//	
-//	public String getErrorCode() {
-//		return errorCode;
-//	}
-//	public void setErrorCode(String errorCode) {
-//		this.errorCode = errorCode;
-//	}
+import com.devcollege.entities.Student;
 
-	//	public String getErrorMessage() {
-//		return errorMessage;
-//	}
-//	public void setErrorMessage(String errorMessage) {
-//		this.errorMessage = errorMessage;
+public class StudentNotFoundException extends RuntimeException {
+
+//	private String message;
+//
+//	@Override
+//	public String getMessage() {
+//		return message;
 //	}
 //
-	public StudentNotFoundException(String message) {
-		super(message);
+//	public void setMessage(String message) {
+//		this.message = message;
+//	}
+//
+//	public StudentNotFoundException(String message) {
+//		super(message);
+//	}
+
+
+	String value;
+	String message;
+	String passedValue;
+
+	@Override
+	public String toString() {
+		return "" +
+				"value='" + value + '\'' +
+				", message='" + message + '\'' +
+				", passedValue='" + passedValue + '\'' +
+				'}';
 	}
-	
-//	public StudentNotFoundException() {
-//		super();
-//	}
-//	public StudentNotFoundException(String errorCode, String errorMessage) {
-//		super();
-//		this.errorCode = errorCode;
-//		this.errorMessage = errorMessage;
-//	}
-	
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	@Override
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public String getPassedValue() {
+		return passedValue;
+	}
+
+	public void setPassedValue(String passedValue) {
+		this.passedValue = passedValue;
+	}
+
+	public StudentNotFoundException(String value, String message, String passedValue) {
+		super(String.format("%s not found %s %s ",value, message,passedValue));
+		this.value = value;
+		this.message = message;
+		this.passedValue = passedValue;
+	}
 }

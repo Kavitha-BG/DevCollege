@@ -19,13 +19,14 @@ public class Student {
 			parameters = {
 				@Parameter(name = SequenceIdGenerator.INCREMENT_PARAM, value = "1"),
 	            @Parameter(name = SequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "STD"),
-	            @Parameter(name = SequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d")
+	            @Parameter(name = SequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%04d")
 			} )	
 	@Column(name="student_id", nullable=false, length=16)
 	private String studentId;
 
 	@Column(name="student_name",nullable=false,length=50)
 	@NotBlank(message = "Student name should not be null")
+	@Pattern(regexp = "^[A-Za-z]+[A-Za-z ]*$", message = " Student Name should be valid")
 	private String studentName;
 	
 	@Column(name="highest_qualification",nullable=false)
@@ -35,12 +36,13 @@ public class Student {
 	@Column(name="student_contact_no",nullable=false,length=10)
 	@Size(min = 10, max = 10, message = "Contact number must be 10-digit numeric string")
 	@NotBlank
+	@Pattern(regexp = "^[0-9]*", message = "Contact no should be 10 digits")
 	private String studentContactNo;
 	
 	@Column(name="wallet_amount",nullable=false,length=10)
-//	@Digits(message="Number should contain 10 digits.", fraction = 0, integer = 10)
 	@NotNull
 	@Positive(message= "Wallet Amount must be numeric or decimal value positive value")
+	@Pattern(regexp = "^[0-9.00]*", message = "Wallet amount should be in numbers")
 	private Float walletAmount;
 	
 	public Student() {
@@ -111,7 +113,7 @@ public class Student {
 
 	@OneToMany(targetEntity = Enrollment.class, cascade = CascadeType.ALL)
 	@JoinColumn(
-			name = "studentID",
+			name = "studentId",
 			referencedColumnName = "student_Id"
 	)
 	private List<Enrollment> enrollmentList;

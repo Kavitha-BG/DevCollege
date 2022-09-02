@@ -21,37 +21,42 @@ public class Course {
 			parameters = {
 					@Parameter(name = SequenceIdGenerator.INCREMENT_PARAM, value = "1"),
 					@Parameter(name = SequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "CRS"),
-					@Parameter(name = SequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d")
+					@Parameter(name = SequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%04d")
 			} )
 	@Column(name="course_id", updatable = false, nullable=false)
 	private String courseId;
 	
 	@Column(name="course_name",nullable=false,length=100)
 	@NotBlank(message = "Course name should not be null")
+	@Pattern(regexp = "^[A-Za-z]+[A-Za-z ]*$", message = " Student Name should be valid")
 	private String courseName;
 	
 	@Column(name="course_description",nullable=false)
-	@NotBlank
+	@NotNull
+	@Pattern(regexp = "^[A-Za-z]+[A-Za-z ]*$", message = " Course Description should be valid")
 	private String courseDescription;
 	
 	@Column(name="no_of_slot",nullable=false)
 	@NotNull
-//	@Digits(message="NumberOfSlot should contain 10 digits.", fraction = 0, integer = 10)
+	@Pattern(regexp = "\\d", message = "NoOfSlot should be in numbers")
 	@Positive(message= "NoOfSlot must be numeric value")
 	private int noOfSlot;
 	
 	@Column(name="course_fee",nullable=false,length=100)
 	@NotNull
-//	@Positive(message= "Course Fee must be numeric value")
+	@Positive(message= "Course Fee must be numeric value")
+//	@Pattern(regexp = "^[0-9]*$", message = "Course Fee should be in numbers")
 	private float courseFee;
 	
 	@Column(name="course_duration",nullable=false,length=100)
 	@NotNull
 	@Positive(message= "Course Duration must be numeric value")
+//	@Pattern(regexp = "^[0-9]*$", message = "Course Duration should be in numbers")
 	private int courseDuration;
 	
 	@Column(name="course_tag",nullable=false,length=100)
 	@NotBlank(message = "Course Tag should be B.E, B.Tech, Diploma, M.E, M.Tech., M.Phil., MS, BBA, BCom, BSc, MSc, BCA, MCA, LLB, MBBS, MBA")
+	@Pattern(regexp = "^[A-Za-z]+[A-Za-z ]*$", message = "Course Tag should be valid")
 	private String courseTag;
 
 	public Course() {
@@ -131,10 +136,6 @@ public class Course {
 				+ courseDescription + ", noOfSlot=" + noOfSlot + ", courseFee="
 				+ courseFee + ", courseDuration=" + courseDuration + ", courseTag=" + courseTag + "]";
 	}
-	
-	
-//	@OneToMany(mappedBy = "enrollment", cascade = CascadeType.ALL)
-//	private List<Enrollment> enrollments = new ArrayList<>();
 
 	@OneToMany(targetEntity = Enrollment.class, cascade = CascadeType.ALL)
 	@JoinColumn(

@@ -3,28 +3,31 @@ package com.devcollege.services;
 import com.devcollege.entities.Course;
 import com.devcollege.entities.Enrollment;
 import com.devcollege.entities.Student;
-import com.devcollege.exceptions.StudentNotFoundException;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
+import com.devcollege.exceptions.EnrollmentNotFoundException;
+import com.devcollege.exceptions.NotFoundException;
+import com.devcollege.payloads.EnrollmentDto;
 
-import javax.validation.Valid;
 import java.util.List;
 
 
 public interface EnrollmentService {
 	
-	public Enrollment addEnrollmentForCourse(Enrollment enrollment);
+	public String addEnrollmentForCourse(Enrollment enrollment) throws EnrollmentNotFoundException;
 	
-	public Enrollment getEnrollmentById(String enrollmentId);
+	public EnrollmentDto getEnrollmentById(String enrolId) throws EnrollmentNotFoundException;
 	
-	public List<Enrollment> getAllEnrollments();
+	public List<EnrollmentDto> getAllEnrollments() throws EnrollmentNotFoundException;
 
-	public Enrollment getEnrollmentByStudentId(String enrollmentId);
+	public Enrollment getEnrollmentByStudentId(Student studentId, Enrollment enrollment) throws EnrollmentNotFoundException;
 
-	public Enrollment changeStatus(String enrollId);
+	public String changeStatus(String enrolId) throws EnrollmentNotFoundException ;
 
-	public Enrollment checkAvailability(String courseId);
+	public String checkAvailability(String courseId) throws NotFoundException;
 
-	public Enrollment courseSuggestion(String studentId);
+	//String checkAvailability(String courseId) throws EnrollmentNotFoundException;
+
+//	public List<String> courseSuggestion(Student studentId, Course course) throws EnrollmentNotFoundException;
+
+	List<Course> courseSuggestion(String studentId) throws EnrollmentNotFoundException;
 
 }

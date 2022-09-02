@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
 import com.devcollege.entities.StudentWallet;
+import com.devcollege.exceptions.CourseNotFoundException;
+import com.devcollege.exceptions.StudentNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,21 +37,26 @@ public class StudentController {
 	
 	@PutMapping("/updatestudent/{studentId}")
 	public ResponseEntity<String> updateStudentById(@Valid @RequestBody Student student, @PathVariable String studentId) {
-
-		String updatedStudent = studentService.updateStudentById(student, studentId);
+		Student updatedStudent = studentService.updateStudentById(student, studentId);
 		return ResponseEntity.ok("Successfully Updated Student details for "+ studentId);
 //		return new ResponseEntity<Student>(HttpStatus.CREATED);
 	}
 
 	@DeleteMapping("/deletestudent/{studentId}")
-	public ResponseEntity<String> deleteStudent(@Valid @PathVariable String studentId) {
+	public ResponseEntity<String> deleteStudent(@Valid @PathVariable String studentId) throws CourseNotFoundException {
 		studentService.deleteStudent(studentId);
 		return ResponseEntity.ok("Successfully Deleted Student details for "+ studentId);
 //		return new ResponseEntity<String>(HttpStatus.ACCEPTED);
 	}
 
-	@GetMapping("/get")
-	public ResponseEntity<Student> getStudentById(@Valid @RequestParam(value="studentId", required=false) String studentId) {
+//	@GetMapping("/get")
+//	public ResponseEntity<Student> getStudentById(@Valid @RequestParam(value="studentId", required=false) String studentId) throws StudentNotFoundException {
+//		Student retrieveStudent = studentService.getStudentById(studentId);
+//		return new ResponseEntity<Student>(retrieveStudent, HttpStatus.OK);
+//	}
+
+	@GetMapping("/get/{studentId}")
+	public ResponseEntity<Student> getStudentById(@Valid @PathVariable String studentId) throws StudentNotFoundException {
 		Student retrieveStudent = studentService.getStudentById(studentId);
 		return new ResponseEntity<Student>(retrieveStudent, HttpStatus.OK);
 	}
@@ -61,17 +68,16 @@ public class StudentController {
 	}
 
 	@PostMapping("studentwallet/{studentId}")
-	public ResponseEntity<?> addWalletAmount(@PathVariable String studentId , @RequestBody StudentWallet studentWallet) {
+	public ResponseEntity<?> addWalletAmount(@PathVariable String studentId , @RequestBody StudentWallet studentWallet) throws CourseNotFoundException{
 		Float finalAmount = studentService.addWalletAmount(studentId,studentWallet);
 		return ResponseEntity.ok("Successfully added Amount for "+ studentId
 				+ " " + "and available balance is " + finalAmount);
 	}
 
 	@GetMapping("studentwallet/{studentId}")
-	public ResponseEntity<Map<String, String>> getWalletDetail(@PathVariable String studentId) {
+	public ResponseEntity<Map<String, String>> getWalletDetail(@PathVariable String studentId) throws CourseNotFoundException{
 		Map<String, String> retrieveStudentWallet = studentService.getWalletDetail(studentId);
 		return new ResponseEntity<>(retrieveStudentWallet, HttpStatus.ACCEPTED);
-
 	}
 
 }
