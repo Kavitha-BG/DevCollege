@@ -52,7 +52,7 @@ public class EnrollmentController {
 	public ResponseEntity<String> changeStatus(@PathVariable String enrollId) throws EnrollmentNotFoundException{
 		String updatedStatus = enrollmentService.changeStatus(enrollId);
 		return ResponseEntity.ok("Successfully change the status from "
-				+ getAllEnrollments().getStatusCode() + "to"  + updatedStatus + " for enrol id "+ enrollId);
+				+ getAllEnrollments().getStatusCode() + " to "  + updatedStatus + " for enrol id "+ enrollId);
 	}
 
 	@GetMapping("/availability/{courseId}")
@@ -62,11 +62,9 @@ public class EnrollmentController {
 	}
 
 	@GetMapping("/suggestion/{studentId}")
-			//, produces= MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Course>> courseSuggestion(@PathVariable String studentId) throws NotFoundException, EnrollmentNotFoundException {
 		List<Course> suggestCourse = enrollmentService.courseSuggestion(studentId);
 		return new ResponseEntity<List<Course>>(suggestCourse, HttpStatus.OK);
-//		return null;
 	}
 
 }

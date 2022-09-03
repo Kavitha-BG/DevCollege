@@ -3,7 +3,12 @@ package com.devcollege.services.implementation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.devcollege.entities.Course;
+import com.devcollege.entities.Enrollment;
 import com.devcollege.entities.StudentWallet;
+import com.devcollege.repositories.CourseRepository;
+import com.devcollege.repositories.EnrollmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.devcollege.entities.Student;
@@ -15,6 +20,12 @@ import com.devcollege.exceptions.*;
 public class StudentServiceImplementation implements StudentService {
 	@Autowired
 	private StudentRepository studentRepository;
+
+	@Autowired
+	private EnrollmentRepository enrollmentRepository;
+
+	@Autowired
+	private CourseRepository courseRepository;
 
 	@Override
 	public Student addStudent(Student student) {
@@ -41,10 +52,32 @@ public class StudentServiceImplementation implements StudentService {
 	}
 
 	@Override
-	public void deleteStudent(String studentId) {
+	public String deleteStudent(String studentId) {
 		Student student = studentRepository.findById(studentId).orElseThrow(()
 				-> new NotFoundException("studentId","", studentId));
-		studentRepository.delete(student);
+
+		float total = 0;
+		List<Enrollment> enrollmentList = enrollmentRepository.findAll();
+
+		for (Enrollment e: enrollmentList) {
+			System.out.println(studentId);
+			System.out.println(e.getStudentId());
+			if(studentId.equals(e.getStudentId())){
+				String courseId = e.getCourseId();
+				Course course = courseRepository.findById(courseId).get();
+				Float fee = course.getCourseFee();
+				total += fee;
+			}
+		}
+		if(enrollmentList.equals(studentId)){
+			studentRepository.deleteById(studentId);
+			return "Successfully deleted Student details with " + studentId +
+					" And amount " + total/2 +" will be refunded in original payment method within 24 hours.";
+		} else {
+			studentRepository.deleteById(studentId);
+			return "Successfully Deleted Student details ";
+		}
+
 	}
 
 	@Override

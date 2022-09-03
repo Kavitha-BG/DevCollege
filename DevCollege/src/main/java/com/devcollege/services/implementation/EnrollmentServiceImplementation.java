@@ -36,15 +36,21 @@ public class EnrollmentServiceImplementation implements EnrollmentService {
 		Student enrolledStudent = studentRepository.findById(enrollment.getStudentId()).orElseThrow(()
 				-> new NotFoundException("studentId","",enrollment.getStudentId()));
 
+
 		Course enrolledCourse = courseRepository.findById(enrollment.getCourseId()).orElseThrow(()
 				-> new NotFoundException("courseId","",enrollment.getCourseId()));
+		if (enrolledStudent.getStudentId().equals(enrollment.getStudentId())) {
+			return "You are not able to enroll to this course, because you have already enrolled the course..!!";
+		}
+
 		Calendar calender = Calendar.getInstance();
 		calender.setTime(enrollment.getCourseStartDatetime());
 		calender.add(Calendar.HOUR, enrolledCourse.getCourseDuration());
 		Date date = calender.getTime();
 		enrollment.setCourseEndDatetime(date);
 
-		if(enrolledStudent.getWalletAmount()>=enrolledCourse.getCourseFee()){
+		if(enrolledStudent.getWalletAmount()>=enrolledCourse.getCourseFee()) {
+			if (enrolledCourse.getNoOfSlot() > 0) {
 			enrolledStudent.setWalletAmount(enrolledStudent.getWalletAmount() - enrolledCourse.getCourseFee());
 			studentRepository.save(enrolledStudent);
 			enrollment.setCourseStatus("Allocated");
@@ -52,11 +58,18 @@ public class EnrollmentServiceImplementation implements EnrollmentService {
 			enrollment.setCourseId(enrollment.getCourseId());
 			enrollment.setCourseStartDatetime(enrollment.getCourseStartDatetime());
 			Enrollment getId = enrollmentRepository.save(enrollment);
+			enrolledCourse.setNoOfSlot(enrolledCourse.getNoOfSlot()-1);
+			courseRepository.save(enrolledCourse);
 
 			return "Successfully Enrolled for " + enrolledStudent.getStudentName() + " in course " + enrolledCourse.getCourseName()
 					+ " for " + getId.getEnrolId();
-		}else
-			return "Student wallet amount should be greater than course fee";
+			} else {
+				return "Course is not available for enrollment, It's full..!!";
+			}
+		}else {
+			float remainingAmount = (enrolledCourse.getCourseFee() - enrolledStudent.getWalletAmount());
+			return "Insufficient balance in wallet, Student need " + remainingAmount + " for enrollment";
+		}
 	}
 
 	@Override
@@ -94,17 +107,16 @@ public class EnrollmentServiceImplementation implements EnrollmentService {
 
 	@Override
 	public List<Enrollment> getEnrollmentByStudentId(String studentId) throws NoSuchElementException {
-//		Enrollment enrollmentList = enrollmentRepository.findById(studentId).orElseThrow(()
-//				-> new NoSuchElementException(studentId + " does not enrol for any course."));
 		Student checkStudent = studentRepository.findById(studentId).orElseThrow(()
-				-> new NoSuchElementException(studentId + " does not enrol for any course."));
+				-> new NotFoundException("StudentId","",studentId));
 
 		List<Enrollment> enrolmentList = enrollmentRepository.findAll();
 		List<Enrollment> studentDetail = new ArrayList<>();
 
 		for(Enrollment e : enrolmentList){
-			if(enrolmentList.contains(e.getStudentId())) {
+			if(checkStudent.getStudentId().equals(e.getStudentId())) {
 				studentDetail.add(e);
+				return studentDetail;
 			}
 		}
 		return studentDetail;
@@ -115,77 +127,67 @@ public class EnrollmentServiceImplementation implements EnrollmentService {
 		Enrollment enrollmentStatus = enrollmentRepository.findById(enrolId).orElseThrow(
 				() -> new EnrollmentNotFoundException("Failed to Change Status for enrolment Id " + enrolId));
 
-		Student studentRefundAmount = studentRepository.findById(enrollmentStatus.getCourseStatus()).get();
+		Student student = studentRepository.findById(enrollmentStatus.getStudentId()).get();
 
-		Course courseAmount = courseRepository.findById(enrollmentStatus.getCourseStatus()).get();
-
-//		Calendar calender = Calendar.getInstance();
-//		calender.setTime(enrollment.getCourseStartDatetime());
-//		calender.add(Calendar.HOUR, enrolledCourse.getCourseDuration());
-//		Date date = calender.getTime();
-//		enrollment.setCourseEndDatetime(date);
-
+		Course course = courseRepository.findById(enrollmentStatus.getCourseId()).get();
 
 		@Pattern(regexp = "yyyy-MM-dd HH:mm:ss")
 		LocalDateTime cancelledDateTime = LocalDateTime.now();
-		enrollmentStatus.setCourseStatus(enrollmentStatus.getCourseStatus()+cancelledDateTime);
+		if(enrollmentStatus.getCourseStatus().equals("Allocated") || enrollmentStatus.getCourseStatus().equals("In Progress")) {
+			enrollmentStatus.setCourseStatus(enrollmentStatus.getCourseStatus() + cancelledDateTime);
+			course.setNoOfSlot((course.getNoOfSlot() + 1));
+			float total = student.getWalletAmount() + course.getCourseFee();
+			student.setWalletAmount(total);
+			studentRepository.save(student);
+			courseRepository.save(course);
+			enrollmentRepository.save(enrollmentStatus);
+			return "Successfully change the status " + enrollmentStatus.getCourseStatus() + " for " + enrolId;
+		}
+		if (enrollmentStatus.getCourseStatus().equals("Cancelled")) {
+			Date courseStartDateTime = enrollmentStatus.getCourseStartDatetime();
+			Date cancelledTime = new Date();
+			long difference = cancelledTime.getTime() - courseStartDateTime.getTime();
 
-		Date difference = cancelledDateTime.minusHours(enrollmentStatus.getCourseStartDatetime());
-
-//		LocalDateTime.ofInstant(enrollmentStatus.getCourseStartDatetime()-cancelledDateTime);
-
-		long diff = cancelledDateTime.getHour() - enrollmentStatus.getCourseStartDatetime();
-		long hours = TimeUnit.MILLISECONDS.toHours(diff);
-
-		if (enrollmentStatus.equals("Cancelled")) {
-			if(hours < 48 && hours > 24){
-				studentRefundAmount.setWalletAmount(studentRefundAmount.getWalletAmount()+courseAmount.getCourseFee());
-				studentRepository.save(studentRefundAmount);
-				return "100% amount refunded to student wallet";
-			} else if (hours < 24 && hours > 12) {
+			if (difference <= 2) {
+				student.setWalletAmount(course.getCourseFee() + course.getCourseFee());
+				studentRepository.save(student);
+				courseRepository.save(course);
+				enrollmentRepository.save(enrollmentStatus);
+				return "100 % amount refunded..!!";
+			} else if (difference == 1) {
 				Float oneDayRefund;
-				oneDayRefund=((courseAmount.getCourseFee()/100)*70);
-				studentRefundAmount.setWalletAmount(studentRefundAmount.getWalletAmount()+oneDayRefund);
-				studentRepository.save(studentRefundAmount);
-				return "70% amount refunded to student wallet";
-			} else if (hours <= 12) {
+				oneDayRefund = ((course.getCourseFee() / 100) * 70);
+				student.setWalletAmount(course.getCourseFee() + oneDayRefund);
+				studentRepository.save(student);
+				courseRepository.save(course);
+				enrollmentRepository.save(enrollmentStatus);
+				return "70 % amount refunded..!!";
+			} else if (difference < 1) {
 				Float hoursRefund;
-				hoursRefund = ((courseAmount.getCourseFee()/100)*50);
-				studentRefundAmount.setWalletAmount(studentRefundAmount.getWalletAmount()+hoursRefund);
-				studentRepository.save(studentRefundAmount);
-				return "50% amount refunded to student wallet";
+				hoursRefund = (course.getCourseFee() / 2);
+				student.setWalletAmount(course.getCourseFee() + hoursRefund);
+				studentRepository.save(student);
+				courseRepository.save(course);
+				enrollmentRepository.save(enrollmentStatus);
+				return "50 % amount refunded";
+			} else {
+				return "Not able to refund the amount";
 			}
-		} else
-			return "Not able to refund the amount";
-		return enrolId;
+		}else
+			return "Refund is not possible";
 	}
 
 	@Override
 	public String checkAvailability(String courseId) throws NotFoundException {
 //		Enrollment checkCourse = enrollmentRepository.findById(enrollment.getEnrolId()).orElse(null);
-		Course checkCourse = courseRepository.findById(courseId).orElseThrow();
-
-		Enrollment checkAvailable = enrollmentRepository.findById(courseId).orElseThrow(()
+		Course checkCourse = courseRepository.findById(courseId).orElseThrow(()
 				-> new NotFoundException("courseId", "", courseId));
 
-//		Enrollment totalSlot = enrollmentRepository.count(courseId.equalsIgnoreCase(checkAvailable.getCourseStatus()));
-		if (courseId.equalsIgnoreCase("Allocated")) {
-//			Enrollment totalSlot = enrollmentRepository.count(checkAvailable.getCourseStatus());
-			int totalCount;
+		if(checkCourse.getNoOfSlot()>0){
+			return courseId + checkCourse.getCourseName() + " available for enrollment.";
+		}else {
+			return courseId + checkCourse.getCourseName() + " not available for enrollment.";
 		}
-		if (checkAvailable.getCourseStatus().equalsIgnoreCase("Cancelled") ||
-				checkAvailable.getCourseStatus().equalsIgnoreCase("Completed") ) {
-//				String query = "select count(*) from courses where course_status = 'Allocated' ";
-//				int counter = 0;
-//				if (checkAvailable.getCourseStatus().equalsIgnoreCase("Allocated")) {
-//					counter += 1;
-//					counter++;
-//				}
-//			if (totalSlot < checkCourse.getNoOfSlot()) {
-//				return courseId + " not available for enrollment.";
-//			}
-		}
-		return courseId + " available for enrollment.";
 	}
 
 	@Override

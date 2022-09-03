@@ -64,14 +64,7 @@ public class CourseServiceImplementation implements CourseService {
 	}
 
 	@Override
-	public Course getCourseById(String courseId) throws CourseNotFoundException {
-//		Course course = courseRepository.findById(courseId).orElse(null);
-//		if (course != null) {
-//			return course;
-//		} else {
-//			throw new CourseNotFoundException("Course Id : " + courseId + " does not exist.");
-//		}
-
+	public Course getCourseById(String courseId) throws NotFoundException {
 		Course course = courseRepository.findById(courseId).orElseThrow(()
 				-> new NotFoundException("courseId","", courseId));
 		return course;

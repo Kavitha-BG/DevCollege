@@ -38,7 +38,7 @@ public class Course {
 	
 	@Column(name="no_of_slot",nullable=false)
 	@NotNull
-	@Pattern(regexp = "\\d", message = "NoOfSlot should be in numbers")
+//	@Pattern(regexp = "\\d", message = "NoOfSlot should be in numbers")
 	@Positive(message= "NoOfSlot must be numeric value")
 	private int noOfSlot;
 	

@@ -15,7 +15,7 @@ public interface StudentService {
 
 	public Student updateStudentById(Student student, String studentId);
 	
-	public void deleteStudent(String studentId) throws CourseNotFoundException;
+	public String deleteStudent(String studentId) throws CourseNotFoundException;
 	
 	public Student getStudentById(String studentId) throws StudentNotFoundException;
 	

@@ -7,12 +7,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+
 import com.devcollege.exceptions.*;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 
 @ControllerAdvice
@@ -32,41 +37,26 @@ public class MyControllerAdvice {
 		errorMessage.put("error","No data Found");
 		return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
 	}
-
-//	@ExceptionHandler(NotFoundException.class)
-//	public ResponseEntity<Map<String,String>> handleEmptyInput(CourseNotFoundException ex) {
-//		Map<String,String> errorMessage = new HashMap<>();
-//		errorMessage.put("message",ex.getPassedValue()+" doesn't exist " );
-//		errorMessage.put("error","Failed to add details");
-//		return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
-//	}
-//
-//	@ExceptionHandler(NotFoundException.class)
-//	public ResponseEntity<Map<String,String>> handleEmptyInput(NotFoundException ex) {
-//		Map<String,String> errorMessage = new HashMap<>();
-//		errorMessage.put("message",ex.getPassedValue()+" doesn't exist " );
-//		errorMessage.put("error","Failed to add details");
-//		return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
-//	}
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	@ExceptionHandler(ConstraintViolationException.class)
+	public ResponseEntity<Map<String,String>> handleConstraintViolationException(ConstraintViolationException ex) {
+		Map<String,String> errorMessage = new HashMap<>();
+		errorMessage.put("error","Constraint Violation");
+		return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 
 //	@ExceptionHandler(EmptyInputException.class)
 //	public ResponseEntity<String> handleEmptyInput(EmptyInputException emptyInputException) {
 //		return new ResponseEntity<String>("Failed to add details.", HttpStatus.BAD_REQUEST);
 //	}
 
-//	@ExceptionHandler(NotFoundException.class)
-//	public ResponseEntity<Map<String,String>> handleEmptyInput(NotFoundException ex) {
-//		Map<String,String> errorMessage = new HashMap<>();
-//		errorMessage.put("message",ex.getPassedValue()+" doesn't exist " );
-//		errorMessage.put("error","Failed to add details");
-//		return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
-//	}
-
+//new
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(NoSuchElementException.class)
 	public ResponseEntity<Map<String,String>> handleNoSuchElementException(NoSuchElementException ex) {
-		Map<String,String> errorMessage = new HashMap<>();
-		errorMessage.put("error"," does not enrol for any course.");
-		return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+		Map<String,String> errorMap = new HashMap<>();
+		errorMap.put("errorMessage", ex.getMessage());
+		return new ResponseEntity<Map<String,String>>(errorMap, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@ExceptionHandler(InvalidInputException.class)
@@ -85,9 +75,10 @@ public class MyControllerAdvice {
 	}
 
 	@ExceptionHandler(EnrollmentNotFoundException.class)
-	public ResponseEntity<String> handleEnrollmentNotFoundException(EnrollmentNotFoundException enrollmentNotFoundException) {
-//		System.out.println("++++++++++++++++======="+enrollmentNotFoundException.getMessage());
-		return new ResponseEntity<String>(enrollmentNotFoundException.getMessage(), HttpStatus.BAD_REQUEST);
+	public ResponseEntity<Map<String,String>> handleEnrollmentNotFoundException(EnrollmentNotFoundException ex) {
+		Map<String,String> errorMap = new HashMap<>();
+		errorMap.put("errorMessage", ex.getMessage());
+		return new ResponseEntity<Map<String,String>>(errorMap, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 
@@ -101,50 +92,27 @@ public class MyControllerAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(dto);
     }
 
-//	@ExceptionHandler(RuntimeException.class)
-//	public ResponseEntity<Object> handle(Exception ex, HttpServletRequest request, HttpServletResponse response) {
-//		if (ex instanceof NullPointerException) {
-//			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//		}
-//		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//	}
-
-//	@ExceptionHandler(MethodArgumentNotValidException.class)
-//	@ResponseBody
-//	public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-//		return new ResponseEntity<List<MethodArgumentNotValidException>>(e, HttpStatus.BAD_REQUEST);
-//	}
-//
-//	@ExceptionHandler({HttpMessageNotReadableException.class})
-//	@ResponseBody
-//	public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-//		return new ResponseEntity<List<HttpMessageNotReadableException>>(e, HttpStatus.BAD_REQUEST);
-//	}
-
+//new
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public Map<String,String> handleException(HttpMessageNotReadableException exception) {
+		Throwable cause = exception.getCause();
+		Map<String,String> errorMap = new HashMap<>();
+		if (cause instanceof MismatchedInputException){
+			MismatchedInputException mismatchedInputException = (MismatchedInputException) cause;
+			errorMap.put( "Invalid Input. " , mismatchedInputException.getPath().get(0).getFieldName());
+		}
+		return errorMap;
+	}
 
 //	@ResponseStatus(HttpStatus.BAD_REQUEST)
 //	@ExceptionHandler(MethodArgumentNotValidException.class)
-//	public Map<String,String> handleMethodArgumentNotValidException(MethodArgumentNotValidException methodArgumentNotValidException) {
-//		Map<String,String> errorMap = new HashMap<>();
-//		methodArgumentNotValidException.getBindingResult().getAllErrors().forEach(error -> {
-//			errorMap.put(error.getField(),error.getDefaultMessage());
+//	public ResponseEntity<Map<String, String>> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+//		Map<String, String> errorMap = new HashMap<>();
+//		ex.getBindingResult().getFieldErrors().forEach((error) ->{
+//			errorMap.put(error.getField(), error.getDefaultMessage());
 //		});
-//		return errorMap;
-//	}
-
-//	@Override
-//	@ExceptionHandler(MethodArgumentNotValidException.class)
-//	public ResponseEntity<Object> handleMethodArgumentNotValid(
-//			MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-//
-//		Map<String, String> errors = new HashMap<>();
-//		ex.getBindingResult().getAllErrors().forEach((error) ->{
-//
-//			String fieldName = ((FieldError) error).getField();
-//			String message = error.getDefaultMessage();
-//			errors.put(fieldName, message);
-//		});
-//		return new ResponseEntity<Object>(errors, HttpStatus.BAD_REQUEST);
+//		return new ResponseEntity<Map<String, String>>(errorMap, HttpStatus.BAD_REQUEST);
 //	}
 
     public static class ErrorDto {
@@ -165,13 +133,13 @@ public class MyControllerAdvice {
 		}
 
 		//if there is no suitable handler.
-		@ExceptionHandler(Exception.class)
-		public ResponseEntity<Map<String, String>> handleException(Exception exception) throws IOException {
-		    Map<String, String> errorResponse = new HashMap<>();
-		    errorResponse.put("message", exception.getLocalizedMessage());
-		    errorResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.toString());
-		    return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+//		@ExceptionHandler(Exception.class)
+//		public ResponseEntity<Map<String, String>> handleException(Exception exception) throws IOException {
+//		    Map<String, String> errorResponse = new HashMap<>();
+//		    errorResponse.put("message", exception.getLocalizedMessage());
+//		    errorResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.toString());
+//		    return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
 
     }
 	

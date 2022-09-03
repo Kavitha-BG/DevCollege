@@ -24,10 +24,6 @@ public interface EnrollmentService {
 
 	public String checkAvailability(String courseId) throws NotFoundException;
 
-	//String checkAvailability(String courseId) throws EnrollmentNotFoundException;
-
-//	public List<String> courseSuggestion(Student studentId, Course course) throws EnrollmentNotFoundException;
-
 	List<Course> courseSuggestion(String studentId) throws EnrollmentNotFoundException;
 
 }
