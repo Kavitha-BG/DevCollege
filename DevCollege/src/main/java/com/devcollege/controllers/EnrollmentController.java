@@ -4,12 +4,14 @@ import com.devcollege.entities.Course;
 import com.devcollege.entities.Enrollment;
 import com.devcollege.entities.Student;
 import com.devcollege.exceptions.EnrollmentNotFoundException;
+import com.devcollege.exceptions.NoSuchElementException;
 import com.devcollege.exceptions.NotFoundException;
 import com.devcollege.payloads.EnrollmentDto;
 import com.devcollege.services.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
@@ -41,9 +43,9 @@ public class EnrollmentController {
 	}
 
 	@GetMapping("/getstudent/{studentId}")
-	public ResponseEntity<EnrollmentDto> getEnrollmentByStudentId(@Valid @PathVariable Student studentId, @RequestBody Enrollment enrollment) throws EnrollmentNotFoundException{
-		EnrollmentDto retrieveEnrollment = enrollmentService.getEnrollmentById(enrollment.getEnrolId()) ;
-		return new ResponseEntity<EnrollmentDto>(retrieveEnrollment, HttpStatus.OK);
+	public ResponseEntity<List<Enrollment>> getEnrollmentByStudentId(@Valid @PathVariable String studentId) throws NoSuchElementException {
+		List<Enrollment> retrieveEnrollment = enrollmentService.getEnrollmentByStudentId(studentId) ;
+		return new ResponseEntity<List<Enrollment>>( retrieveEnrollment, HttpStatus.OK);
 	}
 
 	@PostMapping("/status/{enrollId}")

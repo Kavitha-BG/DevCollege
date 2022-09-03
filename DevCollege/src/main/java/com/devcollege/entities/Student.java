@@ -42,7 +42,7 @@ public class Student {
 	@Column(name="wallet_amount",nullable=false,length=10)
 	@NotNull
 	@Positive(message= "Wallet Amount must be numeric or decimal value positive value")
-	@Pattern(regexp = "^[0-9.00]*", message = "Wallet amount should be in numbers")
+//	@Pattern(regexp = "^[0-9]*", message = "Wallet amount should be in numbers")
 	private Float walletAmount;
 	
 	public Student() {

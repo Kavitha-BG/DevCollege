@@ -6,17 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import com.devcollege.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 
 @ControllerAdvice
@@ -66,9 +62,11 @@ public class MyControllerAdvice {
 //		return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
 //	}
 
-	@ExceptionHandler(NoSuchElementFoundException.class)
-	public ResponseEntity<String> handleNoSuchElementFoundException(NoSuchElementFoundException noSuchElementFoundException) {
-		return new ResponseEntity<String>("Failed to update details.", HttpStatus.BAD_REQUEST);
+	@ExceptionHandler(NoSuchElementException.class)
+	public ResponseEntity<Map<String,String>> handleNoSuchElementException(NoSuchElementException ex) {
+		Map<String,String> errorMessage = new HashMap<>();
+		errorMessage.put("error"," does not enrol for any course.");
+		return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@ExceptionHandler(InvalidInputException.class)

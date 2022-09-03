@@ -2,10 +2,8 @@ package com.devcollege.controllers;
 
 import com.devcollege.entities.Course;
 import com.devcollege.exceptions.CourseNotFoundException;
-import com.devcollege.exceptions.NoSuchElementFoundException;
+import com.devcollege.exceptions.NoSuchElementException;
 import com.devcollege.services.CourseService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +31,7 @@ public class CourseController {
 	}
 	
 	@PutMapping("/updatecourse/{courseId}")
-	public ResponseEntity<String> updateCourseById(@Valid @RequestBody Course course, @PathVariable String courseId) throws NoSuchElementFoundException {
+	public ResponseEntity<String> updateCourseById(@Valid @RequestBody Course course, @PathVariable String courseId) throws NoSuchElementException {
 		String updatedCourse = courseService.updateCourseById(course, courseId);
 		return ResponseEntity.ok("Successfully Updated Course details for "+ courseId);
 	}

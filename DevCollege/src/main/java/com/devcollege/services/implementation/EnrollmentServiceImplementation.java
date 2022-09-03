@@ -5,20 +5,22 @@ import com.devcollege.entities.Enrollment;
 import com.devcollege.entities.Student;
 import com.devcollege.exceptions.EnrollmentNotFoundException;
 import com.devcollege.exceptions.NoDataFoundException;
+import com.devcollege.exceptions.NoSuchElementException;
 import com.devcollege.exceptions.NotFoundException;
-import com.devcollege.payloads.CourseDto;
 import com.devcollege.payloads.EnrollmentDto;
 import com.devcollege.repositories.CourseRepository;
 import com.devcollege.repositories.EnrollmentRepository;
 import com.devcollege.repositories.StudentRepository;
 import com.devcollege.services.EnrollmentService;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.Pattern;
+import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.LongStream;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class EnrollmentServiceImplementation implements EnrollmentService {
@@ -91,44 +93,71 @@ public class EnrollmentServiceImplementation implements EnrollmentService {
 	}
 
 	@Override
-	public Enrollment getEnrollmentByStudentId(Student studentId, Enrollment enrollment) throws EnrollmentNotFoundException {
-		Enrollment enrollmentList = enrollmentRepository.findById(studentId.getStudentId()).orElse(null);
-		if (studentId != null) {
-			return enrollment;
-		} else {
-			throw new EnrollmentNotFoundException(studentId.getStudentName() + " does not enrol for any course.");
+	public List<Enrollment> getEnrollmentByStudentId(String studentId) throws NoSuchElementException {
+//		Enrollment enrollmentList = enrollmentRepository.findById(studentId).orElseThrow(()
+//				-> new NoSuchElementException(studentId + " does not enrol for any course."));
+		Student checkStudent = studentRepository.findById(studentId).orElseThrow(()
+				-> new NoSuchElementException(studentId + " does not enrol for any course."));
+
+		List<Enrollment> enrolmentList = enrollmentRepository.findAll();
+		List<Enrollment> studentDetail = new ArrayList<>();
+
+		for(Enrollment e : enrolmentList){
+			if(enrolmentList.contains(e.getStudentId())) {
+				studentDetail.add(e);
+			}
 		}
+		return studentDetail;
 	}
 
 	@Override
 	public String changeStatus(String enrolId) throws EnrollmentNotFoundException {
 		Enrollment enrollmentStatus = enrollmentRepository.findById(enrolId).orElseThrow(
 				() -> new EnrollmentNotFoundException("Failed to Change Status for enrolment Id " + enrolId));
-//
-//		Student studentStatus = studentRepository.findById(student.getStudentId()).get();
-//
-//		Course courseStatus = courseRepository.findById(course.getCourseId()).get();
 
-		enrollmentStatus.setCourseStatus(enrollmentStatus.getCourseStatus());
+		Student studentRefundAmount = studentRepository.findById(enrollmentStatus.getCourseStatus()).get();
+
+		Course courseAmount = courseRepository.findById(enrollmentStatus.getCourseStatus()).get();
+
+//		Calendar calender = Calendar.getInstance();
+//		calender.setTime(enrollment.getCourseStartDatetime());
+//		calender.add(Calendar.HOUR, enrolledCourse.getCourseDuration());
+//		Date date = calender.getTime();
+//		enrollment.setCourseEndDatetime(date);
+
+
+		@Pattern(regexp = "yyyy-MM-dd HH:mm:ss")
+		LocalDateTime cancelledDateTime = LocalDateTime.now();
+		enrollmentStatus.setCourseStatus(enrollmentStatus.getCourseStatus()+cancelledDateTime);
+
+		Date difference = cancelledDateTime.minusHours(enrollmentStatus.getCourseStartDatetime());
+
+//		LocalDateTime.ofInstant(enrollmentStatus.getCourseStartDatetime()-cancelledDateTime);
+
+		long diff = cancelledDateTime.getHour() - enrollmentStatus.getCourseStartDatetime();
+		long hours = TimeUnit.MILLISECONDS.toHours(diff);
+
 		if (enrollmentStatus.equals("Cancelled")) {
-
-//			Float halfAmount;
-//			halfAmount=(courseStatus.getCourseFee()/2);
-
-//			studentStatus.setWalletAmount(student.halfAmount);
-//
-//			studentStatus.setWalletAmount(enrolledStudent.getWalletAmount() - enrolledCourse.getCourseFee());
-//			studentRepository.save(enrolledStudent);
-
-//			if () {
-//
-//			} else if () {
-//
-//			} else {
-//
-//			}
-		}
-		return null;
+			if(hours < 48 && hours > 24){
+				studentRefundAmount.setWalletAmount(studentRefundAmount.getWalletAmount()+courseAmount.getCourseFee());
+				studentRepository.save(studentRefundAmount);
+				return "100% amount refunded to student wallet";
+			} else if (hours < 24 && hours > 12) {
+				Float oneDayRefund;
+				oneDayRefund=((courseAmount.getCourseFee()/100)*70);
+				studentRefundAmount.setWalletAmount(studentRefundAmount.getWalletAmount()+oneDayRefund);
+				studentRepository.save(studentRefundAmount);
+				return "70% amount refunded to student wallet";
+			} else if (hours <= 12) {
+				Float hoursRefund;
+				hoursRefund = ((courseAmount.getCourseFee()/100)*50);
+				studentRefundAmount.setWalletAmount(studentRefundAmount.getWalletAmount()+hoursRefund);
+				studentRepository.save(studentRefundAmount);
+				return "50% amount refunded to student wallet";
+			}
+		} else
+			return "Not able to refund the amount";
+		return enrolId;
 	}
 
 	@Override
@@ -143,10 +172,6 @@ public class EnrollmentServiceImplementation implements EnrollmentService {
 		if (courseId.equalsIgnoreCase("Allocated")) {
 //			Enrollment totalSlot = enrollmentRepository.count(checkAvailable.getCourseStatus());
 			int totalCount;
-//			@Query(value="SELECT course_status FROM
-//					enrollments enr
-//					WHERE enr.getCourseStatus() = "Allocated" AND enr.courseId =  ")
-//					List<String> getTotalSlot(Long id, Long id2);
 		}
 		if (checkAvailable.getCourseStatus().equalsIgnoreCase("Cancelled") ||
 				checkAvailable.getCourseStatus().equalsIgnoreCase("Completed") ) {
@@ -170,10 +195,10 @@ public class EnrollmentServiceImplementation implements EnrollmentService {
 
 		List<Course> courseList = courseRepository.findAll();
 		List<Course> selectedCourse = new ArrayList<>();
-		
-		for(Course c : courseList){
-			if(checkStudent.getHighestQualification().equalsIgnoreCase(c.getCourseTag())) {
-				selectedCourse.add(c);
+
+		for(Course course : courseList){
+			if(checkStudent.getHighestQualification().equalsIgnoreCase(course.getCourseTag())) {
+				selectedCourse.add(course);
 			}
 		}
 		return selectedCourse;

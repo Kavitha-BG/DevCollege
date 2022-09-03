@@ -1,8 +1,6 @@
 package com.devcollege.services.implementation;
 
 import com.devcollege.entities.Course;
-import com.devcollege.entities.Enrollment;
-import com.devcollege.entities.Student;
 import com.devcollege.exceptions.*;
 import com.devcollege.repositories.CourseRepository;
 import com.devcollege.services.CourseService;
@@ -28,7 +26,7 @@ public class CourseServiceImplementation implements CourseService {
 	}
 
 	@Override
-	public String updateCourseById(Course course, String courseId) throws NoSuchElementFoundException{
+	public String updateCourseById(Course course, String courseId) throws NoSuchElementException {
 		Course updateCourse = courseRepository.findById(courseId).orElse(null);
 		if (updateCourse != null) {
 

@@ -2,8 +2,8 @@ package com.devcollege.services;
 
 import com.devcollege.entities.Course;
 import com.devcollege.entities.Enrollment;
-import com.devcollege.entities.Student;
 import com.devcollege.exceptions.EnrollmentNotFoundException;
+import com.devcollege.exceptions.NoSuchElementException;
 import com.devcollege.exceptions.NotFoundException;
 import com.devcollege.payloads.EnrollmentDto;
 
@@ -18,7 +18,7 @@ public interface EnrollmentService {
 	
 	public List<EnrollmentDto> getAllEnrollments() throws EnrollmentNotFoundException;
 
-	public Enrollment getEnrollmentByStudentId(Student studentId, Enrollment enrollment) throws EnrollmentNotFoundException;
+	public List<Enrollment> getEnrollmentByStudentId(String studentId) throws NoSuchElementException;
 
 	public String changeStatus(String enrolId) throws EnrollmentNotFoundException ;
 
