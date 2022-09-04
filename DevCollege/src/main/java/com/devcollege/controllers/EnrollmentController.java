@@ -2,20 +2,18 @@ package com.devcollege.controllers;
 
 import com.devcollege.entities.Course;
 import com.devcollege.entities.Enrollment;
-import com.devcollege.entities.Student;
-import com.devcollege.exceptions.EnrollmentNotFoundException;
-import com.devcollege.exceptions.NoSuchElementException;
+import com.devcollege.exceptions.NoDataFoundException;
 import com.devcollege.exceptions.NotFoundException;
 import com.devcollege.payloads.EnrollmentDto;
 import com.devcollege.services.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Validated
@@ -25,44 +23,44 @@ public class EnrollmentController {
 	private EnrollmentService enrollmentService;
 
 	@PostMapping("/add")
-	public ResponseEntity<String> addEnrolmentForCourse(@Valid @RequestBody Enrollment enrollment) throws EnrollmentNotFoundException{
+	public ResponseEntity<String> addEnrolmentForCourse(@Valid @RequestBody Enrollment enrollment) throws NotFoundException{
 		String savedEnrollment = enrollmentService.addEnrollmentForCourse(enrollment);
 		return ResponseEntity.ok(savedEnrollment);
 	}
 
 	@GetMapping("/get/{enrolId}")
-	public ResponseEntity<EnrollmentDto> getEnrollmentById(@Valid @PathVariable String enrolId) throws EnrollmentNotFoundException {
+	public ResponseEntity<EnrollmentDto> getEnrollmentById(@Valid @PathVariable String enrolId) throws NotFoundException {
 		EnrollmentDto retrieveEnrollment = enrollmentService.getEnrollmentById(enrolId);
 		return new ResponseEntity<EnrollmentDto>(retrieveEnrollment, HttpStatus.OK);
 	}
 
 	@GetMapping("/getAll")
-	public ResponseEntity<List<EnrollmentDto>> getAllEnrollments() throws EnrollmentNotFoundException {
+	public ResponseEntity<List<EnrollmentDto>> getAllEnrollments() throws NoDataFoundException {
 		List<EnrollmentDto> enrollmentList = enrollmentService.getAllEnrollments();
 		return new ResponseEntity<List<EnrollmentDto>>(enrollmentList, HttpStatus.OK);
 	}
 
 	@GetMapping("/getstudent/{studentId}")
-	public ResponseEntity<List<Enrollment>> getEnrollmentByStudentId(@Valid @PathVariable String studentId) throws NoSuchElementException {
+	public ResponseEntity<List<Enrollment>> getEnrollmentByStudentId(@Valid @PathVariable String studentId) throws NotFoundException {
 		List<Enrollment> retrieveEnrollment = enrollmentService.getEnrollmentByStudentId(studentId) ;
 		return new ResponseEntity<List<Enrollment>>( retrieveEnrollment, HttpStatus.OK);
 	}
 
-	@PostMapping("/status/{enrollId}")
-	public ResponseEntity<String> changeStatus(@PathVariable String enrollId) throws EnrollmentNotFoundException{
-		String updatedStatus = enrollmentService.changeStatus(enrollId);
-		return ResponseEntity.ok("Successfully change the status from "
-				+ getAllEnrollments().getStatusCode() + " to "  + updatedStatus + " for enrol id "+ enrollId);
+	@PutMapping("/status/{enrolId}")
+	public ResponseEntity<Map<String,String>> changeStatus(@RequestBody Enrollment enrollment, @PathVariable String enrolId) throws NotFoundException {
+//		System.out.println(enrollment.getCourseStartDatetime());
+		Map<String,String> updatedStatus = this.enrollmentService.changeStatus(enrollment, enrolId);
+		return new ResponseEntity<Map<String,String>>(updatedStatus,HttpStatus.OK);
 	}
 
 	@GetMapping("/availability/{courseId}")
 	public ResponseEntity<String> checkAvailability(@PathVariable String courseId) throws NotFoundException {
 		String checkCourseAvailability = enrollmentService.checkAvailability(courseId);
-		return ResponseEntity.ok(courseId + " " +" available for enrolment.");
+		return new ResponseEntity<String>(checkCourseAvailability,HttpStatus.OK);
 	}
 
 	@GetMapping("/suggestion/{studentId}")
-	public ResponseEntity<List<Course>> courseSuggestion(@PathVariable String studentId) throws NotFoundException, EnrollmentNotFoundException {
+	public ResponseEntity<List<Course>> courseSuggestion(@Valid @PathVariable String studentId) throws NotFoundException {
 		List<Course> suggestCourse = enrollmentService.courseSuggestion(studentId);
 		return new ResponseEntity<List<Course>>(suggestCourse, HttpStatus.OK);
 	}

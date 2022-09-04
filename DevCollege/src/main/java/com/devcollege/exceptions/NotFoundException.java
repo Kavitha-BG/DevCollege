@@ -1,15 +1,15 @@
 package com.devcollege.exceptions;
 
-public class NotFoundException extends RuntimeException{
+public class NotFoundException extends RuntimeException {
     String value;
-    String message;
+    String fieldName;
     String passedValue;
 
     @Override
     public String toString() {
         return "" +
                 "value='" + value + '\'' +
-                ", message='" + message + '\'' +
+                ", fieldName='" + fieldName + '\'' +
                 ", passedValue='" + passedValue + '\'' +
                 '}';
     }
@@ -22,13 +22,13 @@ public class NotFoundException extends RuntimeException{
         this.value = value;
     }
 
-    @Override
-    public String getMessage() {
-        return message;
+//    @Override
+    public String getFieldName() {
+        return fieldName;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
     }
 
     public String getPassedValue() {
@@ -38,10 +38,10 @@ public class NotFoundException extends RuntimeException{
     public void setPassedValue(String passedValue) {
         this.passedValue = passedValue;
     }
-    public NotFoundException(String value, String value2, String passedValue) {
-        super(String.format("%s not found %s %s ",value, value2,passedValue));
+    public NotFoundException(String value, String fieldName, String passedValue) {
+        super(String.format("%s not found %s: %s ",value, fieldName,passedValue));
         this.value = value;
-        this.message = value2;
+        this.fieldName = fieldName;
         this.passedValue = passedValue;
     }
 }

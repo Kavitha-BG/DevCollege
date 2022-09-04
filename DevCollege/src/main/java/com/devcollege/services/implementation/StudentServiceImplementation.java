@@ -3,7 +3,6 @@ package com.devcollege.services.implementation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import com.devcollege.entities.Course;
 import com.devcollege.entities.Enrollment;
 import com.devcollege.entities.StudentWallet;
@@ -81,14 +80,14 @@ public class StudentServiceImplementation implements StudentService {
 	}
 
 	@Override
-	public Student getStudentById(String studentId) throws StudentNotFoundException {
+	public Student getStudentById(String studentId) throws NotFoundException {
 		Student student = studentRepository.findById(studentId).orElseThrow(()
 				-> new NotFoundException("studentId","", studentId));
 		return student;
 	}
 
 	@Override
-	public List<Student> getAllStudents() throws StudentNotFoundException {
+	public List<Student> getAllStudents() throws NoDataFoundException {
 		List<Student> studentList = studentRepository.findAll();
 
 		if (!studentList.isEmpty()) {
@@ -114,7 +113,7 @@ public class StudentServiceImplementation implements StudentService {
 	public Map<String,String> getWalletDetail(String studentId) {
 
 		Student retrieveStudentWallet = studentRepository.findById(studentId).orElseThrow(()
-				-> new NotFoundException("studentId","", studentId));
+				-> new NoDataFoundException(studentId));
 
 		Map<String,String> details = new HashMap<>();
 		details.put("StudentId", studentId);

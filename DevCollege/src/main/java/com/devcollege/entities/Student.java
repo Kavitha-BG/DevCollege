@@ -30,19 +30,22 @@ public class Student {
 	private String studentName;
 	
 	@Column(name="highest_qualification",nullable=false)
+	@Pattern(regexp = "^[A-Za-z]+[A-Za-z ]*$", message = " HighestQualification should be valid")
 	@NotBlank(message="Highest Qualification should be B.E, B.Tech, Diploma, M.E, M.Tech., M.Phil., MS, BBA, BCom, BSc, MSc, BCA, MCA, LLB, MBBS, MBA")
 	private String highestQualification;
 	
 	@Column(name="student_contact_no",nullable=false,length=10)
 	@Size(min = 10, max = 10, message = "Contact number must be 10-digit numeric string")
 	@NotBlank
-	@Pattern(regexp = "^[0-9]*", message = "Contact no should be 10 digits")
+	@Pattern(regexp = "(^$|[0-9]{10})", message = "Contact no should be 10 digits")
 	private String studentContactNo;
 	
 	@Column(name="wallet_amount",nullable=false,length=10)
 	@NotNull
 //	@Positive(message= "Wallet Amount must be numeric or decimal value positive value")
 //	@Pattern(regexp = "\\d", message = "Wallet amount should be in numbers")
+//	@Min(value=1, message = "WalletAmount should be Rs.1")
+//	@Max(value = 50000, message = "Wallet Amount should be lesser than Rs.50000")
 	private Float walletAmount;
 	
 	public Student() {

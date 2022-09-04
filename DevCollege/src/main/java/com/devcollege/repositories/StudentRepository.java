@@ -8,6 +8,5 @@ import com.devcollege.entities.Student;
 
 @Repository
 public interface StudentRepository extends JpaRepository<Student, String> {
-	Student findByStudentId(String studentId);
 
 }

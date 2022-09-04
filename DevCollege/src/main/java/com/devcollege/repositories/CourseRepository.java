@@ -4,15 +4,12 @@ import com.devcollege.entities.Course;
 import org.hibernate.sql.Select;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CourseRepository extends JpaRepository<Course, String> {
 
-	Course findByCourseId(String courseId);
-
-    @Query(nativeQuery = true, value = "Select course_status from enrollments where student_id := 'Allocated'")
-    default int isCourseAllocated(String courseId, String courseStatus) {
-        return 0;
-    }
+    @Query(nativeQuery= true,value="SELECT course_status FROM enrollments where course_id=:courseId")
+    public String getStatusByCourseId(@Param("courseId") String courseId);
 }

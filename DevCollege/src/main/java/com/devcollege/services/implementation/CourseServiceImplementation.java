@@ -6,8 +6,9 @@ import com.devcollege.repositories.CourseRepository;
 import com.devcollege.services.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CourseServiceImplementation implements CourseService {
@@ -26,7 +27,7 @@ public class CourseServiceImplementation implements CourseService {
 	}
 
 	@Override
-	public String updateCourseById(Course course, String courseId) throws NoSuchElementException {
+	public String updateCourseById(Course course, String courseId) throws NotFoundException {
 		Course updateCourse = courseRepository.findById(courseId).orElse(null);
 		if (updateCourse != null) {
 
@@ -45,22 +46,32 @@ public class CourseServiceImplementation implements CourseService {
 	}
 
 	@Override
-	public String deleteCourse(String courseId) throws InvalidInputException {
-		Course course = courseRepository.findById(courseId).orElse(null);
-		if (course != null) {
-			//int courseAllocationCounter = 0;
-			int courseAllocation = courseRepository.isCourseAllocated(courseId, "Allocated") ;
+	public Map<String,String> deleteCourse(String courseId) throws NotFoundException {
+		Course course = courseRepository.findById(courseId).orElseThrow(()
+				-> new NotFoundException("courseId", "" ,courseId));
 
-			if(courseAllocation > 0) {
-				return "You cannot delete a course "+ courseId
-				+ " , It is allocated to some student ";
-			} else {
-				courseRepository.deleteById(courseId);
-				return "Successfully deleted course detail for course: " + courseId;
+		String getStatus = courseRepository.getStatusByCourseId(courseId);
+		if (getStatus != null) {
+			if (courseRepository.getStatusByCourseId(courseId).equalsIgnoreCase("Allocated") ||
+					courseRepository.getStatusByCourseId(courseId).equalsIgnoreCase("InProgress")) {
+				Map<String, String> msg = new HashMap<String, String>();
+				msg.put("Failed to delete course details", courseId);
+				msg.put("It is allocated to some student ", "");
+				return msg;
 			}
-		} else {
-				throw new NotFoundException("courseId","", courseId);
+
+			if (courseRepository.getStatusByCourseId(courseId).equalsIgnoreCase("Completed") ||
+					courseRepository.getStatusByCourseId(courseId).equalsIgnoreCase("Cancelled")) {
+				this.courseRepository.delete(course);
+				Map<String, String> message = new HashMap<String, String>();
+				message.put("Successfully deleted course details :", courseId);
+				return message;
+			}
 		}
+		this.courseRepository.delete(course);
+		Map<String,String> message = new HashMap<String,String>();
+		message.put("Successfully deleted course details :",courseId);
+		return message;
 	}
 
 	@Override

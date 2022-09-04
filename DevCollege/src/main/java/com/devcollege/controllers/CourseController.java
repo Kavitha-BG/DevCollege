@@ -1,17 +1,17 @@
 package com.devcollege.controllers;
 
 import com.devcollege.entities.Course;
-import com.devcollege.exceptions.CourseNotFoundException;
-import com.devcollege.exceptions.NoSuchElementException;
+import com.devcollege.exceptions.NoDataFoundException;
+import com.devcollege.exceptions.NotFoundException;
 import com.devcollege.services.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Validated
@@ -31,26 +31,26 @@ public class CourseController {
 	}
 	
 	@PutMapping("/updatecourse/{courseId}")
-	public ResponseEntity<String> updateCourseById(@Valid @RequestBody Course course, @PathVariable String courseId) throws NoSuchElementException {
+	public ResponseEntity<String> updateCourseById(@Valid @RequestBody Course course, @PathVariable String courseId) throws NotFoundException {
 		String updatedCourse = courseService.updateCourseById(course, courseId);
 		return ResponseEntity.ok("Successfully Updated Course details for "+ courseId);
 	}
 	
 	@DeleteMapping("/deletecourse/{courseId}")
-	public ResponseEntity<String> deleteCourse(@Valid @PathVariable String courseId) throws CourseNotFoundException {
-		courseService.deleteCourse(courseId);
-		return ResponseEntity.ok("Successfully Deleted Course details for "+ courseId);
+	public ResponseEntity<Map<String,String>> deleteCourse(@Valid @PathVariable String courseId) throws NotFoundException {
+		Map<String,String> deleteCourse = this.courseService.deleteCourse(courseId);
+		return new ResponseEntity<>(deleteCourse,HttpStatus.OK);
 //		return new ResponseEntity<String>(HttpStatus.ACCEPTED);
 	}
 
 	@GetMapping("/get/{courseId}")
-	public ResponseEntity<Course> getCourseById(@Valid @PathVariable String courseId) throws CourseNotFoundException{
+	public ResponseEntity<Course> getCourseById(@Valid @PathVariable String courseId) throws NotFoundException{
 		Course retrieveCourse = courseService.getCourseById(courseId);
 		return new ResponseEntity<>(retrieveCourse, HttpStatus.OK);
 	}
 
 	@GetMapping("/getAll")
-	public ResponseEntity<List<Course>> getAllCourses() throws CourseNotFoundException{
+	public ResponseEntity<List<Course>> getAllCourses() throws NoDataFoundException {
 		List<Course> courseList = courseService.getAllCourses();
 		return new ResponseEntity<List<Course>>(courseList, HttpStatus.OK);
 	}

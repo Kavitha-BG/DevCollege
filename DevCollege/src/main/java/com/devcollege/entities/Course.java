@@ -28,7 +28,7 @@ public class Course {
 	
 	@Column(name="course_name",nullable=false,length=100)
 	@NotBlank(message = "Course name should not be null")
-	@Pattern(regexp = "^[A-Za-z]+[A-Za-z ]*$", message = " Student Name should be valid")
+	@Pattern(regexp = "^[A-Za-z]+[A-Za-z ]*$", message = " Course Name should be valid")
 	private String courseName;
 	
 	@Column(name="course_description",nullable=false)
@@ -38,25 +38,29 @@ public class Course {
 	
 	@Column(name="no_of_slot",nullable=false)
 	@NotNull
-//	@Pattern(regexp = "\\d", message = "NoOfSlot should be in numbers")
-	@Positive(message= "NoOfSlot must be numeric value")
+//	@Min(value = 1, message = "NoOfSlot should be minimum 1")
+//	@Max(value = 40, message = "NoOfSlot should be maximum 40")
+//	@Positive(message= "NoOfSlot must be numeric value")
 	private int noOfSlot;
 	
 	@Column(name="course_fee",nullable=false,length=100)
 	@NotNull
-	@Positive(message= "Course Fee must be numeric value")
+	@Positive(message= "Course Fee must be numeric positive value")
 //	@Pattern(regexp = "^[0-9]*$", message = "Course Fee should be in numbers")
 	private float courseFee;
 	
 	@Column(name="course_duration",nullable=false,length=100)
 	@NotNull
 	@Positive(message= "Course Duration must be numeric value")
+	@Min(value = 1, message = "courseDuration should be minimum 1 hour")
+	@Max(value = 60, message = "courseDuration should be maximum 60 hours")
 //	@Pattern(regexp = "^[0-9]*$", message = "Course Duration should be in numbers")
 	private int courseDuration;
 	
 	@Column(name="course_tag",nullable=false,length=100)
 	@NotBlank(message = "Course Tag should be B.E, B.Tech, Diploma, M.E, M.Tech., M.Phil., MS, BBA, BCom, BSc, MSc, BCA, MCA, LLB, MBBS, MBA")
 	@Pattern(regexp = "^[A-Za-z]+[A-Za-z ]*$", message = "Course Tag should be valid")
+//	@Size(min=2, max= 4, message = "courseTag should be minimum 2 courses")
 	private String courseTag;
 
 	public Course() {

@@ -2,12 +2,10 @@ package com.devcollege.services;
 
 import java.util.List;
 import java.util.Map;
-
 import com.devcollege.entities.Student;
 import com.devcollege.entities.StudentWallet;
-import com.devcollege.exceptions.CourseNotFoundException;
-import com.devcollege.exceptions.StudentNotFoundException;
-
+import com.devcollege.exceptions.NoDataFoundException;
+import com.devcollege.exceptions.NotFoundException;
 
 public interface StudentService {
 	
@@ -15,11 +13,11 @@ public interface StudentService {
 
 	public Student updateStudentById(Student student, String studentId);
 	
-	public String deleteStudent(String studentId) throws CourseNotFoundException;
+	public String deleteStudent(String studentId) throws NotFoundException;
 	
-	public Student getStudentById(String studentId) throws StudentNotFoundException;
+	public Student getStudentById(String studentId) throws NotFoundException;
 	
-	public List<Student> getAllStudents() throws StudentNotFoundException;
+	public List<Student> getAllStudents() throws NoDataFoundException;
 
 	public Float addWalletAmount(String studentId,StudentWallet studentWallet);
 
