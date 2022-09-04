@@ -1,5 +1,6 @@
 package com.devcollege.payloads;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
@@ -10,9 +11,9 @@ public class EnrollmentDto {
     private String enrolId;
     private String courseId;
     private String studentId;
-    @DateTimeFormat(pattern = "YYYY/MM/DD HH:mm:ss")
+    @JsonFormat(pattern = "YYYY/MM/DD HH:mm:ss")
     private Date courseStartDatetime;
-    @DateTimeFormat(pattern = "YYYY/MM/DD HH:mm:ss")
+    @JsonFormat(pattern = "YYYY/MM/DD HH:mm:ss")
     private Date courseEndDatetime;
     private String courseStatus;
     private String courseLink ;

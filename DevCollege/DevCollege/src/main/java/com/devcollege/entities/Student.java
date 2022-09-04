@@ -19,7 +19,7 @@ public class Student {
 			parameters = {
 				@Parameter(name = SequenceIdGenerator.INCREMENT_PARAM, value = "1"),
 	            @Parameter(name = SequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "STD"),
-	            @Parameter(name = SequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d")
+	            @Parameter(name = SequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%04d")
 			} )	
 	@Column(name="student_id", nullable=false, length=16)
 	private String studentId;
@@ -36,11 +36,13 @@ public class Student {
 	@Column(name="student_contact_no",nullable=false,length=10)
 	@Size(min = 10, max = 10, message = "Contact number must be 10-digit numeric string")
 	@NotBlank
+	@Pattern(regexp = "^[0-9]*", message = "Contact no should be 10 digits")
 	private String studentContactNo;
 	
 	@Column(name="wallet_amount",nullable=false,length=10)
 	@NotNull
-	@Positive(message= "Wallet Amount must be numeric or decimal value positive value")
+//	@Positive(message= "Wallet Amount must be numeric or decimal value positive value")
+//	@Pattern(regexp = "\\d", message = "Wallet amount should be in numbers")
 	private Float walletAmount;
 	
 	public Student() {

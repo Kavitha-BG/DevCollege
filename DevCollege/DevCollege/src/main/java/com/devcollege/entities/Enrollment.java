@@ -1,6 +1,7 @@
 package com.devcollege.entities;
 
 import com.devcollege.sequencestylegenerator.SequenceIdGenerator;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,6 +20,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 @Entity
 @Table(name="enrollments")
@@ -32,30 +37,30 @@ public class Enrollment {
 			parameters = {
 					@Parameter(name = SequenceIdGenerator.INCREMENT_PARAM, value = "1"),
 					@Parameter(name = SequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "EN"),
-					@Parameter(name = SequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%05d")
+					@Parameter(name = SequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%04d")
 			} )
 	@Column(name="enrol_id", updatable = false, nullable=false)
 	private String enrolId;
 
+	@NotNull(message = "Course Id should not be null")
 	private String courseId;
+	@NotNull(message = "Student Id should not be null")
 	private String studentId;
 
-	@DateTimeFormat(pattern = "YYYY/MM/DD HH:mm:ss")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	@Column(name="course_start_datetime",nullable=false)
+	@FutureOrPresent(message = "Course Start Date Time should be present or future date")
+	@NotNull(message = "Course Start Datetime  should not be null")
 	private Date courseStartDatetime;
 
-	@DateTimeFormat(pattern = "YYYY/MM/DD HH:mm:ss")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	@Column(name="course_end_datetime",nullable=false)
+	@Future(message = "Course End Date Time should be future date")
 	private Date courseEndDatetime;
 
 	@Column(name="course_status",nullable=false)
+	@Pattern(regexp = "^[A-Za-z]+[A-Za-z ]*$", message = " Course Status should be valid")
 	private String courseStatus;
-
-////	@Column(name="course_link",insertable = false, updatable = false, nullable=false)
-//	private String courseLink ;
-//
-////	@Column(name="student_link",insertable = false, updatable = false,nullable=false)
-//	private String studentLink;
 
 	public Enrollment() {
 
@@ -70,8 +75,6 @@ public class Enrollment {
 				", courseStartDatetime=" + courseStartDatetime +
 				", courseEndDatetime=" + courseEndDatetime +
 				", courseStatus='" + courseStatus + '\'' +
-//				", courseLink='" + courseLink + '\'' +
-//				", studentLink='" + studentLink + '\'' +
 				'}';
 	}
 
@@ -123,22 +126,6 @@ public class Enrollment {
 		this.courseStatus = courseStatus;
 	}
 
-//	public String getCourseLink() {
-//		return courseLink;
-//	}
-//
-//	public void setCourseLink(String courseLink) {
-//		this.courseLink = courseLink;
-//	}
-//
-//	public String getStudentLink() {
-//		return studentLink;
-//	}
-//
-//	public void setStudentLink(String studentLink) {
-//		this.studentLink = studentLink;
-//	}
-
 	public Enrollment(String enrolId, String courseId, String studentId, Date courseStartDatetime, Date courseEndDatetime, String courseStatus, String courseLink, String studentLink) {
 		this.enrolId = enrolId;
 		this.courseId = courseId;
@@ -146,9 +133,6 @@ public class Enrollment {
 		this.courseStartDatetime = courseStartDatetime;
 		this.courseEndDatetime = courseEndDatetime;
 		this.courseStatus = courseStatus;
-//		this.courseLink = courseLink;
-//		this.studentLink = studentLink;
 	}
-
 
 }
