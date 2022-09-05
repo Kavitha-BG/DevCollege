@@ -21,14 +21,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-@ControllerAdvice
 public class MyControllerAdvice {
 
 	@ExceptionHandler(NotFoundException.class)
 	public ResponseEntity<Map<String,String>> handleEmptyInput(NotFoundException ex) {
 		Map<String,String> errorMessage = new HashMap<>();
 		errorMessage.put("message",ex.getPassedValue()+" doesn't exist " );
-		errorMessage.put("error","Failed to access details");
+//		errorMessage.put("error","Failed to access details");
 		return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
 	}
 
@@ -50,9 +49,17 @@ public class MyControllerAdvice {
 	@ExceptionHandler(SQLIntegrityConstraintViolationException.class)
 	public ResponseEntity<Map<String,String>> handleConstraintViolationException(SQLIntegrityConstraintViolationException ex) {
 		Map<String,String> errorMessage = new HashMap<>();
-		errorMessage.put("detailedMessage","Course is not available for enrollment, It's full..!!");
+		errorMessage.put("detailedMessage", ex.getMessage());
 		return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
+
+//	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//	@ExceptionHandler(RuntimeException.class)
+//	public ResponseEntity<Map<String,String>> handleRuntimeException(RuntimeException ex) {
+//		Map<String,String> errorMessage = new HashMap<>();
+//		errorMessage.put("detailedMessage", ex.getMessage());
+//		return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+//	}
 
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(MissingPathVariableException.class)

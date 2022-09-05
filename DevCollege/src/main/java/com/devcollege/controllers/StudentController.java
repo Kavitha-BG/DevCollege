@@ -43,10 +43,10 @@ public class StudentController {
 	}
 
 	@DeleteMapping("/deletestudent/{studentId}")
-	public ResponseEntity<String> deleteStudent(@Valid @PathVariable String studentId) throws NotFoundException {
-		studentService.deleteStudent(studentId);
-		return ResponseEntity.ok("Successfully Deleted Student details for "+ studentId);
-//		return new ResponseEntity<String>(HttpStatus.ACCEPTED);
+	public ResponseEntity<Map<String,String>> deleteStudent(@Valid @PathVariable String studentId) throws NotFoundException {
+		Map<String,String> deleteStudent = studentService.deleteStudent(studentId);
+//		return ResponseEntity.ok("Successfully Deleted Student details for "+ studentId);
+		return new ResponseEntity<Map<String,String>>(deleteStudent,HttpStatus.OK);
 	}
 
 //	@GetMapping("/get")

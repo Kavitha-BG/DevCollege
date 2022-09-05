@@ -17,7 +17,7 @@ public interface EnrollmentService {
 	
 	public List<EnrollmentDto> getAllEnrollments() throws NoDataFoundException;
 
-	public List<Enrollment> getEnrollmentByStudentId(String studentId) throws NotFoundException;
+	public  List<EnrollmentDto> getEnrollmentByStudentId(String studentId) throws NotFoundException;
 
 	public Map<String,String> changeStatus(Enrollment enrollment, String enrolId) throws NotFoundException;
 

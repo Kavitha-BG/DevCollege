@@ -1,12 +1,12 @@
 package com.devcollege.entities;
 
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.*;
 
 public class StudentWallet {
 
-	@Positive(message = "Amount must be positive numeric value.")
-//	@Pattern(regexp = "^[0-9]*$", message = "Amount should be in numbers")
+	@Positive(message= "Amount must be numeric or decimal positive value")
+	@Min(value=1, message = "WalletAmount should be Rs.1")
+	@Max(value = 50000, message = "Wallet Amount should be lesser than Rs.50000")
 	private Float amount;
 
 	public Float getAmount() {
@@ -16,6 +16,5 @@ public class StudentWallet {
 	public void setAmount(Float amount) {
 		this.amount = amount;
 	}
-	
 
 }

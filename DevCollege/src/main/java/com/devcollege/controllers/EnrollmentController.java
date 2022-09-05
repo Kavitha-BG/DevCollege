@@ -41,9 +41,9 @@ public class EnrollmentController {
 	}
 
 	@GetMapping("/getstudent/{studentId}")
-	public ResponseEntity<List<Enrollment>> getEnrollmentByStudentId(@Valid @PathVariable String studentId) throws NotFoundException {
-		List<Enrollment> retrieveEnrollment = enrollmentService.getEnrollmentByStudentId(studentId) ;
-		return new ResponseEntity<List<Enrollment>>( retrieveEnrollment, HttpStatus.OK);
+	public ResponseEntity<List<EnrollmentDto>> getEnrollmentByStudentId(@Valid @PathVariable String studentId) throws NotFoundException {
+		List<EnrollmentDto> retrieveEnrollment = enrollmentService.getEnrollmentByStudentId(studentId) ;
+		return new ResponseEntity<List<EnrollmentDto>>( retrieveEnrollment, HttpStatus.OK);
 	}
 
 	@PutMapping("/status/{enrolId}")

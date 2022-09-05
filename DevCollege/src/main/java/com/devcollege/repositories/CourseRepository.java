@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CourseRepository extends JpaRepository<Course, String> {
 
-    @Query(nativeQuery= true,value="SELECT course_status FROM enrollments where course_id=:courseId")
+    @Query(nativeQuery= true,value="SELECT * FROM enrollments where course_id=:courseId")
     public String getStatusByCourseId(@Param("courseId") String courseId);
 }

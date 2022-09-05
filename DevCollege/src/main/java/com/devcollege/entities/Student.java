@@ -26,7 +26,7 @@ public class Student {
 
 	@Column(name="student_name",nullable=false,length=50)
 	@NotBlank(message = "Student name should not be null")
-	@Pattern(regexp = "^[A-Za-z]+[A-Za-z ]*$", message = " Student Name should be valid")
+	@Pattern(regexp = "[A-Za-z ]*", message = " Student Name should be valid")
 	private String studentName;
 	
 	@Column(name="highest_qualification",nullable=false)
@@ -42,10 +42,10 @@ public class Student {
 	
 	@Column(name="wallet_amount",nullable=false,length=10)
 	@NotNull
-//	@Positive(message= "Wallet Amount must be numeric or decimal value positive value")
+//	@Positive(message= "Wallet Amount must be numeric or decimal positive value")
 //	@Pattern(regexp = "\\d", message = "Wallet amount should be in numbers")
-//	@Min(value=1, message = "WalletAmount should be Rs.1")
-//	@Max(value = 50000, message = "Wallet Amount should be lesser than Rs.50000")
+	@Min(value=1, message = "WalletAmount should be Rs.1")
+	@Max(value = 50000, message = "Wallet Amount should be lesser than Rs.50000")
 	private Float walletAmount;
 	
 	public Student() {
@@ -114,11 +114,14 @@ public class Student {
 				+ "]";
 	}
 
-	@OneToMany(targetEntity = Enrollment.class, cascade = CascadeType.ALL)
-	@JoinColumn(
-			name = "studentId",
-			referencedColumnName = "student_Id"
-	)
-	private List<Enrollment> enrollmentList;
+//	@OneToMany(targetEntity = Enrollment.class, cascade = CascadeType.ALL, orphanRemoval = true)
+//	@JoinColumn(
+//			name = "studentId",
+//			referencedColumnName = "student_Id"
+//	)
+//	private List<Enrollment> enrollmentList;
+
+//	@OneToMany(mappedBy = "students", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//	private List<Enrollment> enrollmentList;
 
 }

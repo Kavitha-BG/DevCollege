@@ -42,9 +42,9 @@ public class Enrollment {
 	@Column(name="enrol_id", updatable = false, nullable=false)
 	private String enrolId;
 
-	@NotNull(message = "Course Id should not be null")
+//	@NotNull(message = "Course Id should not be null")
 	private String courseId;
-	@NotNull(message = "Student Id should not be null")
+//	@NotNull(message = "Student Id should not be null")
 	private String studentId;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
@@ -134,5 +134,13 @@ public class Enrollment {
 		this.courseEndDatetime = courseEndDatetime;
 		this.courseStatus = courseStatus;
 	}
+
+//	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+//	@JoinColumn(name = "student_id", nullable = false)
+//	private Student students;
+
+//	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+//	@JoinColumn(name = "course_id", nullable = false)
+//	private Course courses;
 
 }

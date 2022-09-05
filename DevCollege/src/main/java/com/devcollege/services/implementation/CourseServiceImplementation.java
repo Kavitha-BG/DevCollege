@@ -50,8 +50,8 @@ public class CourseServiceImplementation implements CourseService {
 		Course course = courseRepository.findById(courseId).orElseThrow(()
 				-> new NotFoundException("courseId", "" ,courseId));
 
-		String getStatus = courseRepository.getStatusByCourseId(courseId);
-		if (getStatus != null) {
+		String getCourseStatus = courseRepository.getStatusByCourseId(courseId);
+		if (getCourseStatus != null) {
 			if (courseRepository.getStatusByCourseId(courseId).equalsIgnoreCase("Allocated") ||
 					courseRepository.getStatusByCourseId(courseId).equalsIgnoreCase("InProgress")) {
 				Map<String, String> msg = new HashMap<String, String>();

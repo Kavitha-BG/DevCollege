@@ -18,14 +18,11 @@ import java.util.Map;
 @RequestMapping("/course")
 public class CourseController {
 
-//	private final Logger logger = LoggerFactory.getLogger(CourseController.class);
-
 	@Autowired
 	private CourseService courseService;
 
 	@PostMapping("/addcourse")
 	public ResponseEntity<String> addCourse(@Valid @RequestBody Course course) {
-//		logger.info("Add course :");
 		Course savedCourse = courseService.addCourse(course);
 		return ResponseEntity.ok("Successfully Added Course details for " + course.getCourseId());
 	}

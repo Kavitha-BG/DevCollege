@@ -1,16 +1,15 @@
 package com.devcollege.payloads;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.persistence.Column;
 import java.util.Date;
 
 public class EnrollmentDto {
 
     private String enrolId;
     private String courseId;
+    private String courseName;
     private String studentId;
+    private String studentName;
     @JsonFormat(pattern = "YYYY/MM/DD HH:mm:ss")
     private Date courseStartDatetime;
     @JsonFormat(pattern = "YYYY/MM/DD HH:mm:ss")
@@ -19,10 +18,25 @@ public class EnrollmentDto {
     private String courseLink ;
     private String studentLink;
 
+    public String getCourseName() {
+        return courseName;
+    }
+
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
+
+    public String getStudentName() {
+        return studentName;
+    }
+
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
+    }
+
     public String getEnrolId() {
         return enrolId;
     }
-
     public void setEnrolId(String enrolId) {
         this.enrolId = enrolId;
     }
@@ -39,14 +53,11 @@ public class EnrollmentDto {
         return studentId;
     }
 
-    public void setStudentId(String studentId) {
-        this.studentId = studentId;
-    }
+    public void setStudentId(String studentId) { this.studentId = studentId; }
 
     public Date getCourseStartDatetime() {
         return courseStartDatetime;
     }
-
     public void setCourseStartDatetime(Date courseStartDatetime) {
         this.courseStartDatetime = courseStartDatetime;
     }
@@ -54,7 +65,6 @@ public class EnrollmentDto {
     public Date getCourseEndDatetime() {
         return courseEndDatetime;
     }
-
     public void setCourseEndDatetime(Date courseEndDatetime) {
         this.courseEndDatetime = courseEndDatetime;
     }
@@ -86,15 +96,29 @@ public class EnrollmentDto {
     public EnrollmentDto() {
     }
 
-    public EnrollmentDto(String enrolId, String courseId, String studentId, Date courseStartDatetime,
+    public EnrollmentDto(String enrolId, String courseId, String courseName, String studentId, String studentName, Date courseStartDatetime,
                          Date courseEndDatetime, String courseStatus, String courseLink, String studentLink) {
         this.enrolId = enrolId;
         this.courseId = courseId;
+        this.courseName = courseName;
         this.studentId = studentId;
+        this.studentName = studentName;
         this.courseStartDatetime = courseStartDatetime;
         this.courseEndDatetime = courseEndDatetime;
         this.courseStatus = courseStatus;
         this.courseLink = courseLink;
         this.studentLink = studentLink;
     }
+
+//    public EnrollmentDto(String enrolId, String courseId, String studentId, Date courseStartDatetime,
+//                         Date courseEndDatetime, String courseStatus, String courseLink, String studentLink) {
+//        this.enrolId = enrolId;
+//        this.courseId = courseId;
+//        this.studentId = studentId;
+//        this.courseStartDatetime = courseStartDatetime;
+//        this.courseEndDatetime = courseEndDatetime;
+//        this.courseStatus = courseStatus;
+//        this.courseLink = courseLink;
+//        this.studentLink = studentLink;
+//    }
 }

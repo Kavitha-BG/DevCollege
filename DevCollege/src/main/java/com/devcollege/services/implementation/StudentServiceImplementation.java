@@ -1,13 +1,16 @@
 package com.devcollege.services.implementation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.devcollege.entities.Course;
 import com.devcollege.entities.Enrollment;
 import com.devcollege.entities.StudentWallet;
+import com.devcollege.payloads.EnrollmentDto;
 import com.devcollege.repositories.CourseRepository;
 import com.devcollege.repositories.EnrollmentRepository;
+import com.devcollege.services.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.devcollege.entities.Student;
@@ -25,6 +28,9 @@ public class StudentServiceImplementation implements StudentService {
 
 	@Autowired
 	private CourseRepository courseRepository;
+
+	@Autowired
+	private EnrollmentService enrollmentService;
 
 	@Override
 	public Student addStudent(Student student) {
@@ -51,32 +57,62 @@ public class StudentServiceImplementation implements StudentService {
 	}
 
 	@Override
-	public String deleteStudent(String studentId) {
+	public Map<String,String> deleteStudent(String studentId) throws NotFoundException{
+
 		Student student = studentRepository.findById(studentId).orElseThrow(()
-				-> new NotFoundException("studentId","", studentId));
+				-> new NotFoundException("studentId", "", studentId));
 
-		float total = 0;
+//		float total = 0;
+//		List<Enrollment> enrollmentList = enrollmentRepository.findAll();
+//
+//		for (Enrollment e: enrollmentList) {
+//			if (studentId.equals(e.getStudentId())) {
+//				String courseId = e.getCourseId();
+//				Course course = courseRepository.findById(courseId).get();
+//				Float fee = course.getCourseFee();
+//				total = (total + fee) / 2;
+//
+//				enrollmentRepository.deleteById(e.getEnrolId());
+//				Map<String, String> message = new HashMap<>();
+//				message.put("Successfully deleted Student details And amount will be " +
+//						"refunded in original payment method within 24 hours :", studentId);
+//				return message.toString();
+////			}
+////		}
+//
+////			if(enrollmentList.equals(studentId)){
+////				studentRepository.deleteById(studentId);
+////				return "Successfully deleted Student details with " + studentId +
+////						" And amount " + total/2 +" will be refunded in original payment method within 24 hours.";
+//			} else {
+//				Map<String, String> message = new HashMap<>();
+//				studentRepository.deleteById(studentId);
+//				return "Successfully Deleted Student details :" + "" + studentId;
+//			}
+//		}
+//			return  null;
 		List<Enrollment> enrollmentList = enrollmentRepository.findAll();
-
+		ArrayList<String> list = new ArrayList<String>();
 		for (Enrollment e: enrollmentList) {
-			System.out.println(studentId);
-			System.out.println(e.getStudentId());
-			if(studentId.equals(e.getStudentId())){
-				String courseId = e.getCourseId();
-				Course course = courseRepository.findById(courseId).get();
-				Float fee = course.getCourseFee();
-				total += fee;
+			String id= e.getStudentId();
+			list.add(id);
+		}
+
+		System.out.println();
+		boolean flag = false;
+		for (int i=0; i<list.size(); i++){
+			List<Enrollment> enrollments = this.enrollmentRepository.getAllEnrollments(list.get(i));
+			List<EnrollmentDto> enrolDtoList = new ArrayList<>();
+			for (Enrollment e: enrollments){
+				EnrollmentDto response = enrollmentService.getEnrollmentById(e.getEnrolId());
+				response.setCourseStatus("Cancelled");
+				enrollmentRepository.save(e);
+				Map<String,String> msg = new HashMap<String,String>();
+				msg.put(" Enrolment as cancelled and deleted", studentId);
+				return msg;
 			}
 		}
-		if(enrollmentList.equals(studentId)){
-			studentRepository.deleteById(studentId);
-			return "Successfully deleted Student details with " + studentId +
-					" And amount " + total/2 +" will be refunded in original payment method within 24 hours.";
-		} else {
-			studentRepository.deleteById(studentId);
-			return "Successfully Deleted Student details ";
-		}
-
+		return null;
 	}
 
 	@Override
@@ -102,18 +138,23 @@ public class StudentServiceImplementation implements StudentService {
 		Student student = studentRepository.findById(studentId).orElseThrow(()
 				-> new NotFoundException("studentId","", studentId));
 
-		Float finalAmount = student.getWalletAmount() + studentWallet.getAmount();
-		student.setWalletAmount(finalAmount);
-		studentRepository.save(student);
 
-		return finalAmount;
+		if(studentWallet.getAmount() > 0) {
+			Float finalAmount = student.getWalletAmount() + studentWallet.getAmount();
+			student.setWalletAmount(finalAmount);
+			studentRepository.save(student);
+
+			return finalAmount;
+		} else {
+			throw new RuntimeException("Amount should be positive numeric value");
+		}
 	}
 
 	@Override
 	public Map<String,String> getWalletDetail(String studentId) {
 
 		Student retrieveStudentWallet = studentRepository.findById(studentId).orElseThrow(()
-				-> new NoDataFoundException(studentId));
+				-> new NotFoundException("studentId","", studentId));
 
 		Map<String,String> details = new HashMap<>();
 		details.put("StudentId", studentId);
@@ -121,5 +162,6 @@ public class StudentServiceImplementation implements StudentService {
 
 		return details;
 	}
+
 }
 

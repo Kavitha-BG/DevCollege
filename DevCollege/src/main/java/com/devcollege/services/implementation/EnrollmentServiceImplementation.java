@@ -12,7 +12,6 @@ import com.devcollege.repositories.StudentRepository;
 import com.devcollege.services.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -38,10 +37,6 @@ public class EnrollmentServiceImplementation implements EnrollmentService {
 		}else {
 			return "Course is not available for enrollment, It's full..!!";
 		}
-
-//		if(enrolledStudent.getStudentId().equals(enrollment.getStudentId())) {
-//			return "You are not able to enroll to this course, because you have already enrolled the course..!!";
-//		}else
 		if(enrolledStudent.getWalletAmount()>=enrolledCourse.getCourseFee()) {
 			enrolledStudent.setWalletAmount(enrolledStudent.getWalletAmount() - enrolledCourse.getCourseFee());
 			enrollment.setCourseStatus("Allocated");
@@ -56,13 +51,31 @@ public class EnrollmentServiceImplementation implements EnrollmentService {
 			courseRepository.save(enrolledCourse);
 			studentRepository.save(enrolledStudent);
 			enrollmentRepository.save(enrollment);
-
-			return "Successfully Enrolled for " + enrolledStudent.getStudentName() + " in course " + enrolledCourse.getCourseName()
-					+ " for enrollment id : " + getId.getEnrolId();
 		}else {
 			float remainingAmount = (enrolledCourse.getCourseFee() - enrolledStudent.getWalletAmount());
 			return "Insufficient balance in wallet, Student need " + remainingAmount + " for enrollment";
 		}
+
+		List<Enrollment> allEnrollments = enrollmentRepository.getAllEnrollments(enrollment.getStudentId());
+		ArrayList<Date> endDate = new ArrayList<Date>();
+		ArrayList<Date> startDate = new ArrayList<Date>();
+
+		for (Enrollment enrol: allEnrollments) {
+			endDate.add(enrol.getCourseEndDatetime());
+			startDate.add(enrol.getCourseStartDatetime());
+			System.out.println(startDate);
+			System.out.println(endDate);
+		}
+
+		for (int i=0;i<endDate.size() && i<startDate.size(); i++){
+			if(enrollment.getCourseStartDatetime().before(endDate.get(i))&&
+					enrollment.getCourseStartDatetime().after(endDate.get(i))){
+				return "You are not able to enroll to this course, because you have already enrolled the course..!!";
+			}
+		}
+		enrollmentRepository.save(enrollment);
+		return "Successfully Enrolled for " + enrolledStudent.getStudentName() + " in course " + enrolledCourse.getCourseName()
+				+ " for enrollment id : " + enrollment.getEnrolId();
 	}
 
 	@Override
@@ -77,8 +90,10 @@ public class EnrollmentServiceImplementation implements EnrollmentService {
 		EnrollmentDto enrolledList = new EnrollmentDto();
 		enrolledList.setEnrolId(enrollment.getEnrolId());
 		enrolledList.setCourseId(enrollment.getCourseId());
+		enrolledList.setCourseName(course.getCourseName());
 		enrolledList.setCourseStatus(enrollment.getCourseStatus());
 		enrolledList.setStudentId(enrollment.getStudentId());
+		enrolledList.setStudentName(student.getStudentName());
 		enrolledList.setCourseStartDatetime(enrollment.getCourseStartDatetime());
 		enrolledList.setCourseEndDatetime(enrollment.getCourseEndDatetime());
 		enrolledList.setCourseLink("http://localhost:8080/course/get/" + course.getCourseId());
@@ -99,48 +114,59 @@ public class EnrollmentServiceImplementation implements EnrollmentService {
 	}
 
 	@Override
-	public List<Enrollment> getEnrollmentByStudentId(String studentId) throws NoSuchElementException {
+	public List<EnrollmentDto> getEnrollmentByStudentId(String studentId) throws NoSuchElementException {
 		Student checkStudent = studentRepository.findById(studentId).orElseThrow(()
-				-> new NotFoundException("StudentId","",studentId));
+				-> new NotFoundException("StudentId", "", studentId));
 
-		List<Enrollment> enrolmentList = enrollmentRepository.findAll();
-		List<Enrollment> studentDetail = new ArrayList<>();
+		List<Enrollment> enrollments = enrollmentRepository.getAllEnrollments(studentId);
 
-		for(Enrollment e : enrolmentList){
-			if(checkStudent.getStudentId().equals(e.getStudentId())) {
-				studentDetail.add(e);
-				return studentDetail;
-			}
+		List<EnrollmentDto> enrolledList = new ArrayList<>();
+
+		for(Enrollment enrollment : enrollments){
+			EnrollmentDto enrollmentDto = new EnrollmentDto();
+			enrollmentDto.setEnrolId(enrollment.getEnrolId());
+			enrollmentDto.setCourseId(enrollment.getCourseId());
+			Course course = courseRepository.findById(enrollment.getCourseId()).get();
+			enrollmentDto.setCourseName(course.getCourseName());
+			enrollmentDto.setCourseStatus(enrollment.getCourseStatus());
+			enrollmentDto.setStudentId(enrollment.getStudentId());
+			enrollmentDto.setStudentName(checkStudent.getStudentName());
+			enrollmentDto.setCourseStartDatetime(enrollment.getCourseStartDatetime());
+			enrollmentDto.setCourseEndDatetime(enrollment.getCourseEndDatetime());
+			enrollmentDto.setCourseLink("http://localhost:8080/course/get/" + course.getCourseId());
+			enrollmentDto.setStudentLink("http://localhost:8080/student/get/" + checkStudent.getStudentId());
+			enrolledList.add(enrollmentDto);
 		}
-		return studentDetail;
+		return enrolledList;
 	}
 
 	@Override
 	public Map<String,String> changeStatus(Enrollment enrollment,String enrolId) throws NotFoundException {
 		Enrollment enrollmentStatus = enrollmentRepository.findById(enrolId).orElseThrow(
-				() -> new NoDataFoundException("Failed to Change Status for enrolment Id " + enrolId));
+				() -> new NotFoundException("enrolId", "", enrolId));
+						//NoDataFoundException("Failed to Change Status for enrolment Id " + enrolId));
 
 		Student student = studentRepository.findById(enrollmentStatus.getStudentId()).orElseThrow();
 
 		Course course = courseRepository.findById(enrollmentStatus.getCourseId()).orElseThrow();
 
-		if (enrollmentStatus.getCourseStatus().equals("Cancelled")) {
-			if(enrollment.getCourseStatus().equals("InProgress")){
+		if (enrollmentStatus.getCourseStatus().equalsIgnoreCase("Cancelled")) {
+			if(enrollment.getCourseStatus().equalsIgnoreCase("InProgress")){
 				Map<String,String> detailedMessage = new HashMap<>();
 				detailedMessage.put("Failed to Change Status for enrolment Id " , enrolId);
 				return detailedMessage;
-			} else if (enrollment.getCourseStatus().equals("Completed")) {
+			} else if (enrollment.getCourseStatus().equalsIgnoreCase("Completed")) {
 				Map<String,String> detailedMessage = new HashMap<>();
 				detailedMessage.put( "Failed to Change Status for enrolment Id " , enrolId);
 				return detailedMessage;
-			}else if(enrollment.getCourseStatus().equals("Cancelled")){
+			}else if(enrollment.getCourseStatus().equalsIgnoreCase("Cancelled")){
 				Map<String,String> detailedMessage = new HashMap<>();
 				detailedMessage.put("Failed to Change Status for enrolment Id " , enrolId);
 				return detailedMessage;
 			}
 		}
 
-		if (enrollmentStatus.getCourseStatus().equals("Allocated")) {
+		if (enrollmentStatus.getCourseStatus().equalsIgnoreCase("Allocated")) {
 			if(enrollmentStatus.getCourseStatus().equals("Cancelled")) {
 
 				Date courseStartDateTime = enrollmentStatus.getCourseStartDatetime();
@@ -176,7 +202,7 @@ public class EnrollmentServiceImplementation implements EnrollmentService {
 
 	@Override
 	public String checkAvailability(String courseId) throws NotFoundException {
-//		Enrollment checkCourse = enrollmentRepository.findById(enrollment.getEnrolId()).orElse(null);
+
 		Course checkCourse = courseRepository.findById(courseId).orElseThrow(()
 				-> new NotFoundException("courseId", "", courseId));
 

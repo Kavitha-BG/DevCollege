@@ -8,6 +8,7 @@ import javax.validation.constraints.*;
 
 import com.devcollege.sequencestylegenerator.SequenceIdGenerator;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.validator.constraints.Range;
 
 @Entity
 @Table(name="courses")
@@ -38,16 +39,15 @@ public class Course {
 	
 	@Column(name="no_of_slot",nullable=false)
 	@NotNull
-//	@Min(value = 1, message = "NoOfSlot should be minimum 1")
-//	@Max(value = 40, message = "NoOfSlot should be maximum 40")
 //	@Positive(message= "NoOfSlot must be numeric value")
+	@Range(min=0, max=100)
 	private int noOfSlot;
 	
 	@Column(name="course_fee",nullable=false,length=100)
 	@NotNull
 	@Positive(message= "Course Fee must be numeric positive value")
 //	@Pattern(regexp = "^[0-9]*$", message = "Course Fee should be in numbers")
-	private float courseFee;
+	private Float courseFee;
 	
 	@Column(name="course_duration",nullable=false,length=100)
 	@NotNull
@@ -59,8 +59,8 @@ public class Course {
 	
 	@Column(name="course_tag",nullable=false,length=100)
 	@NotBlank(message = "Course Tag should be B.E, B.Tech, Diploma, M.E, M.Tech., M.Phil., MS, BBA, BCom, BSc, MSc, BCA, MCA, LLB, MBBS, MBA")
-	@Pattern(regexp = "^[A-Za-z]+[A-Za-z ]*$", message = "Course Tag should be valid")
-//	@Size(min=2, max= 4, message = "courseTag should be minimum 2 courses")
+	@Pattern(regexp = "[A-Za-z ,]*", message = "Course Tag should be valid")
+	@Size(min=2, message = "courseTag should be minimum 2 courses")
 	private String courseTag;
 
 	public Course() {
@@ -147,4 +147,7 @@ public class Course {
 			referencedColumnName = "course_Id"
 	)
 	private List<Enrollment> enrollmentList;
+
+//	@OneToMany(mappedBy = "courses", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//	private List<Enrollment> enrollmentList;
 }

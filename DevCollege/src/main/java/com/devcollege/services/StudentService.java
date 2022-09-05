@@ -6,14 +6,16 @@ import com.devcollege.entities.Student;
 import com.devcollege.entities.StudentWallet;
 import com.devcollege.exceptions.NoDataFoundException;
 import com.devcollege.exceptions.NotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface StudentService {
 	
 	public Student addStudent(Student student);
 
 	public Student updateStudentById(Student student, String studentId);
-	
-	public String deleteStudent(String studentId) throws NotFoundException;
+
+	@Transactional
+	public Map<String,String> deleteStudent(String studentId) throws NotFoundException;
 	
 	public Student getStudentById(String studentId) throws NotFoundException;
 	
