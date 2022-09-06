@@ -1,28 +1,25 @@
 package com.devcollege.services;
 
 import java.util.List;
-import java.util.Map;
 import com.devcollege.entities.Student;
-import com.devcollege.entities.StudentWallet;
-import com.devcollege.exceptions.NoDataFoundException;
-import com.devcollege.exceptions.NotFoundException;
-import org.springframework.transaction.annotation.Transactional;
+import com.devcollege.exceptions.StudentNotFoundException;
+
 
 public interface StudentService {
 	
-	public Student addStudent(Student student);
-
-	public Student updateStudentById(Student student, String studentId);
-
-	@Transactional
-	public Map<String,String> deleteStudent(String studentId) throws NotFoundException;
+	public Student addStudentDetail(Student student);
 	
-	public Student getStudentById(String studentId) throws NotFoundException;
+	public String updateStudentDetail(Student student, String studentId);
 	
-	public List<Student> getAllStudents() throws NoDataFoundException;
-
-	public Float addWalletAmount(String studentId,StudentWallet studentWallet);
-
-	public Map<String,String> getWalletDetail(java.lang.String studentId);
-
+	public String deleteStudentDetail(String studentId);
+	
+	public Student getStudentDetail(String studentid);
+	
+	public List<Student> getAllStudentDetail() throws StudentNotFoundException;
+	
+	
+	public Student addWalletAmount(Float walletAmount);
+	
+	public void getWalletDetail();
+	
 }
